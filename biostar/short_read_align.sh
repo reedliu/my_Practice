@@ -1,3 +1,5 @@
+### Update Log: 2018-12-18 add bwa
+
 mkdir -p ~/tmp/bwa_test/ref
 
 ###################
