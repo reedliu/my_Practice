@@ -1,4 +1,5 @@
-# my_Practice
-This directory deposits some codes for bioinformatics practice.
+# May the force be with you
 
-Some codes come from biostar handbook, just for learning.
+> This directory includes practice codes from biostar and some bioinformatics knowledge
+
+I like to record my learning process!
