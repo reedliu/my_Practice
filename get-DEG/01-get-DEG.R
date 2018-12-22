@@ -5,7 +5,7 @@
 ### Email: jieandze1314@gmail.com
 ### Blog: https://reedliu.github.io/
 ### CAAS/AGIS/SDAU 
-### Update Log: 2018-12-22  First version
+### Update Log: 2018-12-22  First version about Deseq2, Heatmap, Vocalno
 ###
 ### ---------------
 rm(list = ls())
