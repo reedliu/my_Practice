@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1545462541811.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "68E08F16",
+    "lastKnownWriteTime" : 1545463163,
+    "last_content_update" : 1545464195128,
+    "path" : "~/Downloads/tmp/03_ggplot2_volcano/volcano_practice_guozi.Rmd",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "258,68",
+        "last_setup_crc32" : "B9334962bb338d19",
+        "scrollLine" : "255"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

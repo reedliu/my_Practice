@@ -1,0 +1,270 @@
+---
+title: "volcano_practice"
+author: "your name please"
+date: "2018年10月13日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+介绍什么叫RMD文件
+介绍什么叫火山图？
+导入allDiff
+```{r}
+rm(list = ls())
+load(file = "allDiff.Rda")
+```
+
+x轴是logFC，y轴越大，p值越小
+```{r}
+library(ggplot2)
+data <- allDiff
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value))) +
+  geom_point()
+  
+```
+
+没有颜色，加一个,color ="red"
+```{r}
+data <- allDiff
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value),color ="red")) +
+  geom_point()
+```
+
+颜色单调，不像火山
+data$significant <- as.factor(data$P.Value<0.05 & abs(data$logFC) > 1)
+
+```{r}
+data <- allDiff
+data$significant <- as.factor(data$P.Value<0.05 & abs(data$logFC) > 1)
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value),color =significant)) +
+  geom_point()
+```
+
+有点意思哈，但是我想要的是火山图，红红的那种哦
+scale_color_manual(values =c("black","red"))
+```{r}
+data <- allDiff
+data$significant <- as.factor(data$P.Value<0.05 & abs(data$logFC) > 1)
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value),color =significant)) +
+  scale_color_manual(values =c("black","red"))+
+  geom_point()
+
+```
+
+加两根线
+geom_hline
+geom_vlin
+```{r}
+data <- allDiff
+data$significant <- as.factor(data$P.Value<0.05 & abs(data$logFC) > 1)
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value),color =significant)) +
+  geom_point() +
+  scale_color_manual(values =c("black","red"))+
+  geom_hline(yintercept = -log10(0.05),lty=4,lwd=0.6,alpha=0.8)+
+  geom_vline(xintercept = c(1,-1),lty=4,lwd=0.6,alpha=0.8)
+  
+```
+
+
+不喜欢灰色背景
+theme_bw()
+```{r}
+data <- allDiff
+data$significant <- as.factor(data$P.Value<0.05 & abs(data$logFC) > 1)
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value),color =significant)) +
+  geom_point() +
+  scale_color_manual(values =c("black","red"))+
+  geom_hline(yintercept = -log10(0.05),lty=4,lwd=0.6,alpha=0.8)+
+  geom_vline(xintercept = c(1,-1),lty=4,lwd=0.6,alpha=0.8)+
+  theme_bw()
+```
+
+
+不喜欢格子
+```{r}
+data <- allDiff
+data$significant <- as.factor(data$P.Value<0.05 & abs(data$logFC) > 1)
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value),color =significant)) +
+  geom_point() +
+  scale_color_manual(values =c("black","red"))+
+  geom_hline(yintercept = -log10(0.05),lty=4,lwd=0.6,alpha=0.8)+
+  geom_vline(xintercept = c(1,-1),lty=4,lwd=0.6,alpha=0.8)+
+  theme_bw()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),   
+        axis.line = element_line(colour = "black"))
+```
+
+
+加上一个标题吧记得改一下你的名字哦，留作纪念
+```{r}
+data <- allDiff
+data$significant <- as.factor(data$P.Value<0.05 & abs(data$logFC) > 1)
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value),color =significant)) +
+  geom_point() +
+  scale_color_manual(values =c("black","red"))+
+  geom_hline(yintercept = -log10(0.05),lty=4,lwd=0.6,alpha=0.8)+
+  geom_vline(xintercept = c(1,-1),lty=4,lwd=0.6,alpha=0.8)+
+  theme_bw()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),   
+        axis.line = element_line(colour = "black"))+
+  labs(title="Volcanoplot_by_guozi_20180811_in_wuhan", x="log2 (fold change)",y="-log10 (q-value)")
+```
+
+标题能居中么？
+theme(plot.title = element_text(hjust = 0.5))
+```{r}
+data <- allDiff
+data$significant <- as.factor(data$P.Value<0.05 & abs(data$logFC) > 1)
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value),color =significant)) +
+  geom_point() +
+  scale_color_manual(values =c("black","red"))+
+  geom_hline(yintercept = -log10(0.05),lty=4,lwd=0.6,alpha=0.8)+
+  geom_vline(xintercept = c(1,-1),lty=4,lwd=0.6,alpha=0.8)+
+  theme_bw()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),   
+        axis.line = element_line(colour = "black"))+
+  labs(title="Volcanoplot_by_guozi_20171029_in_wuhan", x="log2 (fold change)",y="-log10 (q-value)")+
+  theme(plot.title = element_text(hjust = 0.5))
+  
+```
+
+我不想要标注怎么办？
+theme(legend.position='none')
+```{r}
+data <- allDiff
+data$significant <- as.factor(data$P.Value<0.05 & abs(data$logFC) > 1)
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value),color =significant)) +
+  geom_point() +
+  scale_color_manual(values =c("black","red"))+
+  geom_hline(yintercept = -log10(0.05),lty=4,lwd=0.6,alpha=0.8)+
+  geom_vline(xintercept = c(1,-1),lty=4,lwd=0.6,alpha=0.8)+
+  theme_bw()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),   
+        axis.line = element_line(colour = "black"))+
+  labs(title="Volcanoplot_by_guozi_20171029_in_wuhan", x="log2 (fold change)",y="-log10 (q-value)")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(legend.position='none')
+  
+```
+
+
+代码越来越多，密集恐惧中
+能不能把特别异常的值标出名字？
+geom_text(data=subset(data, abs(logFC) > 3),aes(label=gene),col="black",alpha = 0.5)
+```{r}
+data <- allDiff
+data$gene <- rownames(data)
+data$significant <- as.factor(data$P.Value<0.05 & abs(data$logFC) > 1)
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value),color =significant)) +
+  geom_point() +
+  scale_color_manual(values =c("black","red"))+
+  geom_hline(yintercept = -log10(0.05),lty=4,lwd=0.6,alpha=0.8)+
+  geom_vline(xintercept = c(1,-1),lty=4,lwd=0.6,alpha=0.8)+
+  theme_bw()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),   
+        axis.line = element_line(colour = "black"))+
+  labs(title="Volcanoplot_by_guozi_20171029_in_wuhan", x="log2 (fold change)",y="-log10 (q-value)")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme(legend.position='none')+
+  geom_text(data=subset(data, abs(logFC) > 3),aes(label=gene),col="black",alpha = 0.5)
+  
+```
+
+标注的文字重叠了,
+library(ggrepel)这个包能搞定哦
+
+```{r}
+library(ggrepel)
+data <- allDiff
+data$gene <- rownames(data)
+data$significant <- as.factor(data$P.Value<0.05 & abs(data$logFC) > 1)
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value),color =significant)) +
+  geom_point(alpha = 0.9, size =0.8) +
+  scale_color_manual(values =c("black","red"))+
+  geom_hline(yintercept = -log10(0.05),lty=4,lwd=0.6,alpha=0.8)+
+  geom_vline(xintercept = c(1,-1),lty=4,lwd=0.6,alpha=0.8)+
+  theme_bw()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),   
+        axis.line = element_line(colour = "black"))+
+  labs(title="Volcanoplot_by_guozi_20171029_in_wuhan", x="log2 (fold change)",y="-log10 (q-value)")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme(legend.position='none')+
+  #geom_text(data=subset(data, abs(logFC) > 4), aes(label=gene),col="black",alpha = 0.5)
+  geom_text_repel(data=subset(data, abs(logFC) > 3), aes(label=gene),col="black",alpha = 0.8)
+```
+
+标签文字能不能换个颜色啊，随便选
+geom_text_repel(data=subset(data, abs(logFC) > 3), aes(label=gene),col="red",alpha = 0.8)
+```{r}
+library(ggrepel)
+data <- allDiff
+data$gene <- rownames(data)
+data$significant <- as.factor(data$P.Value<0.05 & abs(data$logFC) > 1)
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value),color =significant)) +
+  geom_point(alpha = 0.9, size =0.8) +
+  scale_color_manual(values =c("black","red"))+
+  geom_hline(yintercept = -log10(0.05),lty=4,lwd=0.6,alpha=0.8)+
+  geom_vline(xintercept = c(1,-1),lty=4,lwd=0.6,alpha=0.8)+
+  theme_bw()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),   
+        axis.line = element_line(colour = "black"))+
+  labs(title="Volcanoplot_by_guozi_20171029_in_wuhan", x="log2 (fold change)",y="-log10 (q-value)")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme(legend.position='none')+
+  #geom_text(data=subset(data, abs(logFC) > 4), aes(label=gene),col="black",alpha = 0.5)
+  geom_text_repel(data=subset(data, abs(logFC) > 3), aes(label=gene),col="red",alpha = 0.8)
+```
+
+
+
+限制我们的不是技术，只有想象力
+
+```{r}
+data <- allDiff
+data$gene <- rownames(data)
+data$significant <- as.factor(data$P.Value<0.05 & abs(data$logFC) > 1)
+ggplot(data=data, aes(x=logFC, y =-log10(P.Value),color =significant)) +
+  geom_point() +
+  scale_color_manual(values =c("black","red"))+
+  geom_hline(yintercept = -log10(0.05),lty=4,lwd=0.6,alpha=0.8)+
+  geom_vline(xintercept = c(1,-1),lty=4,lwd=0.6,alpha=0.8)+
+  theme_bw()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),   
+        axis.line = element_line(colour = "black"))+
+  labs(title="Volcanoplot_by_guozi_20181013_in_beijing", x="log2 (fold change)",y="-log10 (q-value)")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  #theme(legend.position='none')+
+  #geom_text(data=subset(data, abs(logFC) > 3), aes(label=gene),col="green",alpha = 0.5)+
+  geom_text_repel(data=subset(data, abs(logFC) > 3), aes(label=gene),col="black",alpha = 0.8)+
+  geom_text(aes(x=4,y=5,label="See you tomorrow !"),col ="black",size = 6)+
+  geom_text(aes(x=4,y=3,label="Good night !"),col ="black",size = 6)
+```
+
+虽然每一个人都可以成为画家，但是没有必要！！
+我们不是来学画画的！
+
+
+
+
+
+
+
