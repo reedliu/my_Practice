@@ -4,7 +4,7 @@
 ### Date: 2018-12-22
 ### Email: jieandze1314@gmail.com
 ### Blog: https://reedliu.github.io/
-### CAAS/AGIS/SDAU (Shandong Agricultural University)
+### CAAS/AGIS/SDAU 
 ### Update Log: 2018-12-22  First version
 ###
 ### ---------------
