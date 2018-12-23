@@ -13,6 +13,7 @@ options(stringsAsFactors = F)
 
 load('airway.expreSet.Rdata')
 suppressMessages(library(limma))
+library(edgeR)
 design <- model.matrix(~0+factor(grp))
 colnames(design)=levels(factor(grp))
 rownames(design)=colnames(expr)

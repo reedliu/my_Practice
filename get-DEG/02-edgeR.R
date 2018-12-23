@@ -12,8 +12,8 @@ rm(list = ls())
 options(stringsAsFactors = F)
 
 load('airway.expreSet.Rdata')
-library(eDEGR)
-e <- DEGList(counts=expr,group=factor(grp))
+library(edgeR)
+e <- DGEList(counts=expr,group=factor(grp))
 e$samples$lib.size <- colSums(e$counts)
 e <- calcNormFactors(e)
 e$samples
