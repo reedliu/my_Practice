@@ -30,8 +30,12 @@ DEG <- estimateGLMTrendedDisp(DEG, design)
 DEG <- estimateGLMTagwiseDisp(DEG, design)
 
 fit <- glmFit(DEG, design)
-# https://www.biostars.org/p/110861/
+# edgeR User guide (Page. 30 => "GLM Approach")
 lrt <- glmLRT(fit,  contrast=c(-1,1)) # accoding to design to modify
+# or we can use another way (glmQLFTest):
+# CasevsCtrl <- makeContrasts(Case-Ctrl=trt-untrt, levels=design)
+# lrt <- glmQLFTest(fit,contrast=CasevsCtrl)
+
 nrDEG=topTags(lrt, n=nrow(DEG))
 nrDEG=as.data.frame(nrDEG)
 head(nrDEG)
