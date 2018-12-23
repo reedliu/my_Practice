@@ -49,3 +49,6 @@ if(F){
   trt2_limma_voom_DEG = na.omit(result2)
   write.csv(trt2_limma_voom_DEG,"trt2_limma_voom_DEG.csv",quote = F)
 }
+## save three main DEG pkgs results
+save("Deseq_DEG", "limma_voom_DEG", "edgeR_DEG", file="DEG_result.Rdata")
+

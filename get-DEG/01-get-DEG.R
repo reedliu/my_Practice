@@ -41,11 +41,11 @@ res <- results(dds,
                contrast=c("grp","trt","untrt"))
 resOrdered <- res[order(res$padj),]
 head(resOrdered)
-DEG_deseq=as.data.frame(resOrdered)
-DEG_deseq = na.omit(DEG_deseq)
-# write.csv(DEG_deseq,"DEG_deseq.csv")
+Deseq_DEG=as.data.frame(resOrdered)
+Deseq_DEG = na.omit(Deseq_DEG)
+# write.csv(Deseq_DEG,"Deseq_DEG.csv")
 
-DEG=DEG_deseq
+DEG=Deseq_DEG
 #################################
 ## Heatmap
 #################################
