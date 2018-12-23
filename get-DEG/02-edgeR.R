@@ -14,6 +14,8 @@ options(stringsAsFactors = F)
 load('airway.expreSet.Rdata')
 library(edgeR)
 e <- DGEList(counts=expr,group=factor(grp))
+keep <- rowSums(cpm(e)>1) >= 2
+e <- e[keep, , keep.lib.sizes=FALSE]
 e$samples$lib.size <- colSums(e$counts)
 e <- calcNormFactors(e)
 e$samples
@@ -28,9 +30,9 @@ DEG <- estimateGLMTrendedDisp(DEG, design)
 DEG <- estimateGLMTagwiseDisp(DEG, design)
 
 fit <- glmFit(DEG, design)
-
-lrt <- glmLRT(fit,  contrast=c(1,0)) # accoding to design to modify
-nrDEG=topTags(lrt, n=nrow(expr))
+# https://www.biostars.org/p/110861/
+lrt <- glmLRT(fit,  contrast=c(-1,1)) # accoding to design to modify
+nrDEG=topTags(lrt, n=nrow(DEG))
 nrDEG=as.data.frame(nrDEG)
 head(nrDEG)
 edgeR_DEG=nrDEG
