@@ -6,7 +6,7 @@
 ### Blog: https://reedliu.github.io/
 ### CAAS/AGIS/SDAU 
 ### Update Log: 2018-12-22  First version about edgeR
-###
+### Update Log: 2018-12-23  add edgeR glmQLFTest method
 ### ---------------
 rm(list = ls())
 options(stringsAsFactors = F)
