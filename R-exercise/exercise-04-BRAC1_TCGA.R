@@ -18,10 +18,10 @@ options(stringsAsFactors = F)
 f <- read.csv("e4-plot.txt", sep = "\t")
 ## boxplot
 colnames(f) <- c("id", "subtype", "expression", "mut")
-data <- f
+da <- f
 # install.packages("ggstatsplot")
 library(ggstatsplot)
-ggbetweenstats(data = data, 
+ggbetweenstats(data = da, 
                x = subtype,
                y = expression)
 library(ggplot2)

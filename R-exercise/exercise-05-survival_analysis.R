@@ -10,25 +10,25 @@
 ### ---------------
 
 ## Exercise 5: Survival Analysis
-# Use http://www.oncolnc.org/ to get raw csv data
+# Use http://www.oncolnc.org/ to get raw csv da
 rm(list=ls())
 options(stringsAsFactors = F)
 
 f <- read.csv('e5-BRCA_7157_50_50.csv')
 colnames(f)
-data <- f
+da <- f
 ## first boxplot
 library(ggstatsplot)
-ggbetweenstats(data = data,
+ggbetweenstats(data = da,
                x = Group,
                y = Expression)
 ## second survival analysis
 library(ggplot2)
 library(survival)
 library(survminer)
-table(data$Status)
-data$Status <- ifelse(data$Status == "Dead", 1, 0)
-survf <- survfit(Surv(Days,Status)~Group, data=data)
+table(da$Status)
+da$Status <- ifelse(da$Status == "Dead", 1, 0)
+survf <- survfit(Surv(Days,Status)~Group, data=da)
 # survf
 # summary(survf)
 # simple survplot
