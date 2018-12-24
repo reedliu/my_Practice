@@ -13,7 +13,9 @@ rm(list=ls())
 options(stringsAsFactors = F)
 suppressMessages(library(CLL))
 
+#################################
 ## load data and get expr & grp
+#################################
 data(sCLLex)
 # sCLLex
 expr <- exprs(sCLLex)
@@ -28,7 +30,9 @@ grp <- as.character(pdata$Disease)
 # 单对一个基因：t.test(expr[1,]~grp)
 # 但是对成千上万基因，这样循环比较复杂；并且统计过程不是特别严谨，limma加了矫正的过程
 
+#################################
 ## DEG with limma
+#################################
 suppressMessages(library(limma))
 #limma needs：表达矩阵（expr）、分组矩阵（design）、比较矩阵（contrast）
 #先做一个分组矩阵～design，说明progres是哪几个样本，stable又是哪几个，其中1代表“是”

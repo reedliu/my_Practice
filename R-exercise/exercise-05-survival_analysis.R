@@ -17,12 +17,16 @@ options(stringsAsFactors = F)
 f <- read.csv('e5-BRCA_7157_50_50.csv')
 colnames(f)
 da <- f
+#################################
 ## first boxplot
+#################################
 library(ggstatsplot)
 ggbetweenstats(data = da,
                x = Group,
                y = Expression)
+#################################
 ## second survival analysis
+#################################
 library(ggplot2)
 library(survival)
 library(survminer)
@@ -40,4 +44,4 @@ ggsurvplot(survf,palette = c("orange", "navyblue"),
            conf.int = T, xlab = "Time of days",
            ggtheme = theme_light(),
            ncensor.plot = T)
-
+ggsave("survival_TP53_in_BRCA_taga.png")
