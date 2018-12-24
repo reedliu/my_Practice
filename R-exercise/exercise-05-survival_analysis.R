@@ -14,28 +14,28 @@
 rm(list=ls())
 options(stringsAsFactors = F)
 
-a <- read.csv('e5-BRCA_7157_50_50.csv')
-colnames(a)
-dat <- a
+f <- read.csv('e5-BRCA_7157_50_50.csv')
+colnames(f)
+data <- f
 ## first boxplot
 library(ggstatsplot)
-ggbetweenstats(data = dat,
+ggbetweenstats(data = data,
                x = Group,
                y = Expression)
 ## second survival analysis
 library(ggplot2)
 library(survival)
 library(survminer)
-table(dat$Status)
-dat$Status <- ifelse(dat$Status == "Dead", 1, 0)
-sfit <- survfit(Surv(Days,Status)~Group, data=dat)
-# sfit
-# summary(sfit)
+table(data$Status)
+data$Status <- ifelse(data$Status == "Dead", 1, 0)
+survf <- survfit(Surv(Days,Status)~Group, data=data)
+# survf
+# summary(survf)
 # simple survplot
-ggsurvplot(sfit, conf.int = F, pval = T)
+ggsurvplot(survf, conf.int = F, pval = T)
 
 # complex survplot
-ggsurvplot(sfit,palette = c("orange", "navyblue"),
+ggsurvplot(survf,palette = c("orange", "navyblue"),
            risk.table = T, pval = T,
            conf.int = T, xlab = "Time of days",
            ggtheme = theme_light(),
