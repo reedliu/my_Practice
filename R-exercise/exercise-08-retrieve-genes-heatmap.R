@@ -6,6 +6,7 @@
 ### Blog: https://reedliu.github.io/
 ### CAAS/AGIS/SDAU 
 ### Update Log: 2018-12-24  First version 
+### Update Log: 2018-12-25  Add another solution (using dplyr) from Xiaojie 
 ### From: http://www.bio-info-trainee.com/3750.html
 ### ---------------
 
