@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1545641139787.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2081856727",
+    "id" : "C9774702",
+    "lastKnownWriteTime" : 1545642018,
+    "last_content_update" : 1545642018265,
+    "path" : "~/Git/my_Practice/R-exercise/exercise-07-expr-downstream.R",
+    "project_path" : "exercise-07-expr-downstream.R",
+    "properties" : {
+        "cursorPosition" : "16,21",
+        "scrollLine" : "11",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,91 @@
+]0;~/Git/my_Practice/R-exercise[?1034h💏[K💏cd [K[K[Kcd 
+]0;~💏ls
+[36mApplications[39;49m[0m           [36mMarkEditor[39;49m[0m
+[36mCreative Cloud Files[39;49m[0m   [36mMarkEditorQuickNote[39;49m[0m
+[36mCytoscapeConfiguration[39;49m[0m [36mMovies[39;49m[0m
+[36mDesktop[39;49m[0m                [36mMusic[39;49m[0m
+[36mDocuments[39;49m[0m              [36mPictures[39;49m[0m
+[36mDownloads[39;49m[0m              [36mPublic[39;49m[0m
+[36mGit[39;49m[0m                    [36mPycharmProjects[39;49m[0m
+[36mJupyterNotebook[39;49m[0m        [36mRstudio[39;49m[0m
+[36mLibrary[39;49m[0m                [36migv[39;49m[0m
+]0;~💏cd [K[K[Kll -a
+total 384
+drwxr-xr-x@ 73 reedliu1  staff   2336 Dec 23 18:08 [36m.[39;49m[0m
+drwxr-xr-x   6 root      admin    192 Sep 26 11:53 [36m..[39;49m[0m
+drwxr-xr-x   2 reedliu1  staff     64 Dec 14 10:33 [36m.AnnotationHub[39;49m[0m
+drwx------   2 reedliu1  staff     64 Dec  9  2017 [36m.DDPreview[39;49m[0m
+-rw-r--r--@  1 reedliu1  staff  34820 Dec 20 11:12 .DS_Store
+drwxr-xr-x   3 reedliu1  staff     96 Dec 14 10:33 [36m.MarkEditorAppData[39;49m[0m
+-rw-r--r--   1 reedliu1  staff    297 Dec 23 17:09 .Rhistory
+drwxr-xr-x   6 reedliu1  staff    192 Dec 23 16:57 [36m.SVNClient[39;49m[0m
+drwx------   2 reedliu1  staff     64 Dec 23 18:09 [36m.Trash[39;49m[0m
+drwxr-x--x   2 reedliu1  staff     64 Dec 14 10:33 [36m.adobe[39;49m[0m
+drwxr-xr-x   2 reedliu1  staff     64 Dec 14 10:33 [36m.android[39;49m[0m
+-rw-r--r--   1 reedliu1  staff    674 Dec 23 14:35 .bash_profile
+drwx------   2 reedliu1  staff     64 Dec 14 10:33 [36m.bash_sessions[39;49m[0m
+drwxr-xr-x   2 reedliu1  staff     64 Dec 14 10:33 [36m.biojs_templates[39;49m[0m
+drwxr-xr-x   5 reedliu1  staff    160 Nov  8 14:04 [36m.cache[39;49m[0m
+drwxr-xr-x   4 reedliu1  staff    128 Dec 14 10:33 [36m.citespace[39;49m[0m
+drwxr-xr-x   3 reedliu1  staff     96 Dec 12  2017 [36m.conda[39;49m[0m
+drwx------   8 reedliu1  staff    256 Nov 22 12:54 [36m.config[39;49m[0m
+drwx------   2 reedliu1  staff     64 Dec 14 10:33 [36m.cups[39;49m[0m
+drwxr-xr-x   2 reedliu1  staff     64 Dec 14 10:33 [36m.downloader[39;49m[0m
+drwxr-xr-x  14 reedliu1  staff    448 Dec 18 14:35 [36m.git[39;49m[0m
+-rw-r--r--   1 reedliu1  staff    346 Dec 19 09:18 .gitconfig
+drwx------   2 reedliu1  staff     64 Nov  8 14:04 [36m.gnome2[39;49m[0m
+drwxr-xr-x   4 reedliu1  staff    128 May 14  2018 [36m.gradle[39;49m[0m
+drwxr-xr-x   2 reedliu1  staff     64 Dec 14 10:33 [36m.idlerc[39;49m[0m
+drwxr-xr-x   2 reedliu1  staff     64 Apr 23  2018 [36m.ipynb_checkpoints[39;49m[0m
+drwxr-xr-x   5 reedliu1  staff    160 Apr 23  2018 [36m.ipython[39;49m[0m
+drwxr-xr-x   2 reedliu1  staff     64 Dec 14 10:33 [36m.iterm2[39;49m[0m
+drwxr-xr-x   2 reedliu1  staff     64 Dec 14 10:33 [36m.jswingreader[39;49m[0m
+drwx------   2 reedliu1  staff     64 Dec 14 10:33 [36m.jupyter[39;49m[0m
+drwxr-xr-x   3 reedliu1  staff     96 Dec 26  2017 [36m.local[39;49m[0m
+drwxr-xr-x   3 reedliu1  staff     96 Dec 14 10:33 [36m.matplotlib[39;49m[0m
+drwxr-xr-x   3 reedliu1  staff     96 Jul 26 19:50 [36m.mozilla[39;49m[0m
+drwxr-xr-x   2 reedliu1  staff     64 Dec 14 10:33 [36m.mplayer[39;49m[0m
+drwxr-xr-x  16 reedliu1  staff    512 Dec 14 16:29 [36m.oh-my-zsh[39;49m[0m
+drwxr-xr-x   2 reedliu1  staff     64 Dec 14 10:33 [36m.oracle_jre_usage[39;49m[0m
+drwxr-xr-x   2 reedliu1  staff     64 Dec 14 10:33 [36m.oss-browser[39;49m[0m
+drwx------   3 reedliu1  staff     96 Dec 14 12:44 [36m.putty[39;49m[0m
+drwxr-xr-x   4 reedliu1  staff    128 Dec 14 10:33 [36m.resona[39;49m[0m
+drwxr-xr-x  26 reedliu1  staff    832 Dec 24 09:21 [36m.rstudio-desktop[39;49m[0m
+drwxr-xr-x   2 reedliu1  staff     64 Dec 23 21:16 [36m.sogouinput[39;49m[0m
+drwxr-xr-x   2 reedliu1  staff     64 May  8  2018 [36m.spss[39;49m[0m
+drwxr-xr-x   5 reedliu1  staff    160 Dec 14 16:04 [36m.ssh[39;49m[0m
+drwxr-xr-x   3 reedliu1  staff     96 Dec 14 10:33 [36m.subversion[39;49m[0m
+drwxr-xr-x   3 reedliu1  staff     96 Dec 14 10:33 [36m.vim[39;49m[0m
+-rw-------   1 reedliu1  staff  12735 Dec 23 15:17 .viminfo
+drwxr-xr-x   3 reedliu1  staff     96 Dec 13 17:01 [36m.vscode[39;49m[0m
+-rw-r--r--   1 reedliu1  staff    215 Dec 22 11:37 .wget-hsts
+drwxr-xr-x   4 reedliu1  staff    128 Mar  4  2018 [36m.wns[39;49m[0m
+-rw-r--r--   1 reedliu1  staff  40566 Dec 14 16:29 .zcompdump-MacBook Pro-5.3
+drwxr-xr-x   3 reedliu1  staff     96 Nov 30 09:25 [36m.zoomus[39;49m[0m
+-rw-r--r--   1 reedliu1  staff   1020 Dec 17 21:25 .zsh
+-rw-------   1 reedliu1  staff  68676 Dec 23 18:08 .zsh_history
+-rw-r--r--   1 reedliu1  staff   4111 Dec 23 14:36 .zshrc
+-rw-r--r--   1 reedliu1  staff   3405 Dec 14 16:29 .zshrc.orig
+drwx------   3 reedliu1  staff     96 Dec 14 10:33 [36mApplications[39;49m[0m
+drwxrwxr-x@  2 reedliu1  staff     64 Dec 14 10:33 [36mCreative Cloud Files[39;49m[0m
+drwxr-xr-x  28 reedliu1  staff    896 Nov  8 13:33 [36mCytoscapeConfiguration[39;49m[0m
+drwx------@  4 reedliu1  staff    128 Dec 13 23:29 [36mDesktop[39;49m[0m
+drwx------@ 15 reedliu1  staff    480 Dec 23 11:08 [36mDocuments[39;49m[0m
+drwx------+ 14 reedliu1  staff    448 Dec 23 17:47 [36mDownloads[39;49m[0m
+drwxr-xr-x  10 reedliu1  staff    320 Dec 21 22:59 [36mGit[39;49m[0m
+drwxr-xr-x   6 reedliu1  staff    192 May 14  2018 [36mJupyterNotebook[39;49m[0m
+drwx------@ 83 reedliu1  staff   2656 Nov  7 15:33 [36mLibrary[39;49m[0m
+drwxr-xr-x   6 reedliu1  staff    192 Nov 29 15:01 [36mMarkEditor[39;49m[0m
+drwxr-xr-x   3 reedliu1  staff     96 May 14  2018 [36mMarkEditorQuickNote[39;49m[0m
+drwx------+  9 reedliu1  staff    288 Dec 13 13:41 [36mMovies[39;49m[0m
+drwx------+  7 reedliu1  staff    224 Apr 22  2018 [36mMusic[39;49m[0m
+drwx------+ 11 reedliu1  staff    352 Aug 22 20:50 [36mPictures[39;49m[0m
+drwxr-xr-x+  4 reedliu1  staff    128 Apr 22  2018 [36mPublic[39;49m[0m
+drwxr-xr-x   4 reedliu1  staff    128 Apr 23  2018 [36mPycharmProjects[39;49m[0m
+drwxr-xr-x  11 reedliu1  staff    352 Dec 10 23:58 [36mRstudio[39;49m[0m
+drwxr-xr-x   6 reedliu1  staff    192 Aug  1 18:36 [36migv[39;49m[0m
+]0;~💏vi ~/.Rprofile
+[?2004h]0;~💏sou[K[K[Krm ~/[C.R
+.Rhistory  .Rprofile  
+💏rm ~/.Rprofile 
+]0;~💏

@@ -1,0 +1,12 @@
+tmp <- dplyr::filter(p2s, p2s$symbol %in% gp)
+tmp2 <- tibble::rownames_to_column(data.frame(expr),"probe_id")
+tmp3 <- merge(tmp,tmp2,by="probe_id")
+
+tmp3$median <- apply(tmp3[,3:ncol(tmp3)], 1, median)
+tmp3 <- tmp3[order(tmp3$symbol, tmp3$median, decreasing = T),]
+tmp3 <- tmp3[!duplicated(tmp3$symbol),]
+rownames(tmp3) <- tmp3$symbol
+tmp3 <- tmp3[,-c(1,2,ncol(tmp3))]
+
+gp_expr <- log2(tmp3)
+pheatmap::pheatmap(gp_expr, scale = "row") 

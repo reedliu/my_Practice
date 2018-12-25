@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1545544476891.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "34|6|64|0|\n72|6|97|0|\n",
+    "hash" : "3021018141",
+    "id" : "5C0C0567",
+    "lastKnownWriteTime" : 1545546622,
+    "last_content_update" : 1545546630267,
+    "path" : "~/Git/my_Practice/get-DEG/04-compare_DEGs.R",
+    "project_path" : "04-compare_DEGs.R",
+    "properties" : {
+        "cursorPosition" : "97,1",
+        "scrollLine" : "25",
+        "tempName" : "Untitled2"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

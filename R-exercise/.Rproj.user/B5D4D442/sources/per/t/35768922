@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1545632701500.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "56|6|72|0|\n",
+    "hash" : "3232697289",
+    "id" : "35768922",
+    "lastKnownWriteTime" : 1545637880,
+    "last_content_update" : 1545637880264,
+    "path" : "~/Git/my_Practice/R-exercise/exercise-06-correlation.R",
+    "project_path" : "exercise-06-correlation.R",
+    "properties" : {
+        "cursorPosition" : "13,29",
+        "scrollLine" : "5",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
