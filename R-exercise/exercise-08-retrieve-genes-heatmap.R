@@ -17,6 +17,7 @@ options(stringsAsFactors = F)
 
 #################################
 ## FIRST download GSE and load expr
+## COPYRIGHT: Reed Liu
 #################################
 GSE_expr <- function(GSE){
   library(GEOquery)
