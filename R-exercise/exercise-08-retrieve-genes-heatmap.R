@@ -26,6 +26,7 @@ GSE_expr <- function(GSE){
     gdata <- paste0(GSE,'.eSet.Rdata')
     save(geo, file = gdata)
   }
+  echo "This is created by Reed Liu (jieandze1314@gmail.com)"
   load(gdata)
   expr <<- exprs(geo[[1]])
 }
