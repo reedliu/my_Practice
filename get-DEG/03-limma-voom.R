@@ -6,6 +6,7 @@
 ### Blog: https://reedliu.github.io/
 ### CAAS/AGIS/SDAU 
 ### Update Log: 2018-12-22  First version about limma-voom
+### Update Log: 2018-12-25  Add new limma DEG function
 ###
 ### ---------------
 rm(list = ls())
@@ -52,3 +53,32 @@ if(F){
 ## save three main DEG pkgs results
 save("Deseq_DEG", "limma_voom_DEG", "edgeR_DEG", file="DEG_result.Rdata")
 
+
+# Update on 2018-12-25
+#################################
+## DEG with limma
+#################################
+suppressMessages(library(limma))
+#limma needs：表达矩阵（expr）、分组矩阵（design）、比较矩阵（contrast）
+#先做一个分组矩阵～design，说明progres是哪几个样本，stable又是哪几个，其中1代表“是”
+design <- model.matrix(~0+factor(grp))
+colnames(design) <- levels(factor(grp))
+rownames(design) <- colnames(expr)
+design
+#再做一个比较矩阵【一般是case比control】
+contrast<-makeContrasts(paste0(unique(grp),collapse = "-"),levels = design)
+contrast
+
+DEG <- function(expr,design,contrast){
+  ##step1
+  fit <- lmFit(expr,design)
+  ##step2
+  fit2 <- contrasts.fit(fit, contrast) 
+  fit2 <- eBayes(fit2)  
+  ##step3
+  mtx = topTable(fit2, coef=1, n=Inf)
+  deg_mtx = na.omit(mtx) 
+  return(deg_mtx)
+}
+DEG_mtx <- DEG(expr,design,contrast)
+View(DEG_mtx)
