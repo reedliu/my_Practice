@@ -107,3 +107,36 @@ KRAS的作用就是参与细胞内的信号传递（例如细胞生长、血管�
 参考：https://meetinglibrary.asco.org/record/123622/abstract
 
 https://www.onclive.com/web-exclusives/osimertinib-receives-breakthrough-therapy-designation-for-nsclc-in-firstline
+
+### BRAF
+
+BRAF基因是(v-Raf小鼠肉瘤病毒致癌基因同源基因 B)，属于**RAF**/mil家族成员，编码丝氨酸/苏氨酸特异性激酶。它作为RAF-MEK-ERK-MARK信号转导通路中的重要成员，在细胞增殖、分化、凋亡等方面有重要作用。
+
+BRAF基因位于MARK通路的入口处，将细胞表面的受体和RAS蛋白通过MEK、ERK与核内的转录因子相连，然后激活多种因子；BRAF基因编码的BRAF蛋白，参与调控MAP激酶/ERK信号通路，正常情况下，BRAF蛋白功能是传递来自细胞膜的信号，因此只在传递信号时保持活性，但是，突变的BRAF的蛋白一直保持活性，因此干扰细胞信号传递链的功能，导致细胞异常
+
+![](https://upload-images.jianshu.io/upload_images/9376801-9d3b530a355dfe7d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+BRAF基因首先在2002年发现，常见突变发生在15号外显子的激活区，其中大约92%位于第1799位核苷酸（T变为A），导致缬氨酸变成谷氨酸。
+
+BRAF是甲状腺乳头癌（Papillary thyroid carcinoma, PTC）中最为常见的基因，BRAF V600E突变与死亡率上升相关，甲状腺癌NCCN指出，BRAF是影响预后的重要因素之一；
+
+BRAF突变与大约50%的黑色素瘤（Malignant Melanoma, MM）相关，BRAF V600E可以促进黑色素瘤扩散，促进纤维状肌动蛋白（F-actin）和皮层蛋白斑（cortactin）形成，介导细胞膜凸起与细胞外基质降解。如果黑色素患者发生了BRAF V600E突变，预后将比较差；
+
+肺腺癌（Lung Cancer， LC）中，BRAF突变大约有2%，主要突变类型是V600E，突变率高达50%，主要在女性吸烟群体中出现。有一些KRAS没有突变的患者也会对EGFR靶向药产生耐药性，主要由于KRAS下游的BRAF基因V600E突变造成；
+
+BRAF会在5-15%的结直肠癌中发生特异性突变，超过90%的是BRAF V600E突变
+
+参考：[10.3892/mmr.2012.1016](https://doi.org/10.3892/mmr.2012.1016)
+
+https://www.ncbi.nlm.nih.gov/gene/673
+
+### MET
+
+这个基因名来自1984年，Cooper在研究人骨肉瘤HOS细胞系时，克隆出了一个有转化活性的片段，叫C-MET
+
+MET成为肝细胞生长因子（Hepatocycle Growth Factor, HGF）受体，位于7号染色体长臂，有21个外显子。它具有酪氨酸激酶活性，和多种癌基因产物和调节蛋白有关，参与细胞骨架重排、信息传导，广泛表达于多个组织。
+
+正常情况下，MET作为受体与HGF配体结合，然后联合其他的下游通路，例如RAS/RAF/MEK/ERK或PI3K/AKT/mTOR，对肝、肾、消化道上皮等起作用。HGF/MET信号通路在原发性肿瘤的形成和继发转移中比较常见，促进肿瘤细胞增殖、生长、迁移、血管生成
+
+MET的活化形式有许多种，比如MET基因扩增、MET蛋白过表达、MET基因突变
+
