@@ -6,7 +6,7 @@
 
 ### TP53
 
-#### 简介
+##### 简介
 
 **TP53基因又叫做P53**，是一种抑癌基因，它本身的作用就是防止正常细胞变成癌细胞，也是目前发现的与人类肿瘤**相关性最高**的基因，50%以上的恶性肿瘤中会出现这个基因的突变。75%的癌症患者都有TP53突变，并且TP53的变异和**几乎一半的癌症的发生都有关系**，包括肺癌、乳腺癌、食管癌、胃癌、肝癌、膀胱癌等
 
@@ -14,7 +14,7 @@ TP53在1979年被发现，当时它是作为SV40病毒大T抗原癌蛋白的伴�
 
 目前，基于P53蛋白的抗癌药物一直是研究热点，但FDA没有批准任何针对TP53的靶向药物，相应的TP53突变的基因疗法、靶向肿瘤疫苗与药物都是临床早期
 
-#### 看文献
+##### 看文献
 
 有一篇文献有介绍 **TP53 Mutations in Human Cancers: Origins, Consequences, and Clinical Use**
 
@@ -36,7 +36,7 @@ TP53在卵巢癌（Ovarian cancer），食道癌（Esophageal cancer），结肠
 
 ### BRAC
 
-#### 简介
+##### 简介
 
 1990年发现了与遗传性乳腺癌直接相关的基因，命名为乳腺癌1号基因，即BRCA1，定位于17号染色体q21`17q21`（q表示染色体长臂；p表示短臂，是法语中的“petit”；另外染色体染色后会出现颜色深浅不一的区域，这里21表示在21号染色区间）；
 
@@ -49,3 +49,61 @@ TP53在卵巢癌（Ovarian cancer），食道癌（Esophageal cancer），结肠
 ![](https://upload-images.jianshu.io/upload_images/9376801-0b35e2fb42acd1fa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 参考：https://shared-d7-royalmarsden-public.s3.amazonaws.com/files_trust/s3fs-public/Beginner%E2%80%99s_guide_to_BRCA1_BRCA2.pdf
+
+### EDFR
+
+EGFR (Epidermal Growth Factor Receptor)，简称EGFR、ErbB-1或HER1，是ErbB酪氨酸激酶受体家族成员之一。家族包括HER2(ErbB-2)、HER3（ErbB-3）及HER4（ErbB-4）
+
+EGFR广泛分布在哺乳动物上皮细胞、成纤维细胞、胶质细胞、角质细胞等细胞表面，与配体（EGF）结合时，受体二聚化被激活，调控下游信号通路（包括RAS-RAF-MEK-ERK/MARK信号通路和PI3K-AKT-mTOR信号通路），进而调控细胞生长、增殖和分化
+
+![](https://upload-images.jianshu.io/upload_images/9376801-85b1d7491d413bf3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+EGFR突变频率主要集中在18-21号外显子上，常见的敏感突变包括了EGFR 19 exon del以及EGFR 21 exon L858R，这些突变会导致EGFR对EGFR TKI （表皮生长因子酪氨酸激酶抑制剂）敏感，并且经过TKI治疗的患者会显著增加41%的疾病风险。EGFR的突变会导致细胞生长紊乱、增殖异常，并且有明显的种族划分，亚洲人肺癌患者中EGFR突变率高达50%，高加索人突变频率在10-15%
+
+参考：<https://doi.org/10.1016/j.radonc.2013.06.010>
+
+https://seer.cancer.gov/statfacts/html/lungb.html
+
+### ALK
+
+ALK基因在2号染色体的短臂上，编码胰岛素受体超家族的成员。我们都知道肺癌的一大患病因素就是吸烟，但是从不吸烟的人也换上肺癌，里面就有ALK的作用。
+
+ALK的首次出现并非在肺癌中，而是在20年前以融合基因的形式在间变性大细胞淋巴瘤（ALCL）中被发现，这个基因就是作为了标记定位了淋巴瘤的亚型，命名为间变性淋巴瘤激酶（anaplas-ticlymphoma kinase, ALK）。后来在2007年，日本研究院Soda在1例吸烟的肺癌患者的肿瘤组织中发现了ALK基因和EML4基因融合，证明了它确实是具有致癌性。
+
+ALK蛋白参与大脑和神经的发育，在胚胎发育期高表达，然后处于休眠。最常见的ALK突变是融合，它也是非小细胞肺癌常见的驱动基因，目前的ALK基因重排发生率约2-5%，主要在肺癌患者中，而在鳞状细胞癌中发生率比较低（< 1%）。
+
+参考：<https://doi.org/10.1159/000430852>
+
+### KRAS
+
+##### 简介
+
+RAS基因家族在人类肿瘤中突变概率是最高的，占人类全部恶性肿瘤的三分之一，其中包括KRAS、NRAS、HRAS，三者分别定位于12、1、11号染色体，另外KRAS是鼠克里斯汀内瘤病毒致癌基因同源基因，是RAS家族中影响最大的基因。KRAS的信号通路复杂，并且相关的肿瘤对临床药物有抵抗性，近90%的胰腺癌、30%的结肠癌、30%的肺腺癌都有KRAS突变，因此目前KRAS是世界上最难搞定的基因突变。
+
+##### KRAS是怎么一步步进入研究者的视野的呢？
+
+1982年发现人类致癌基因与v-ras致癌基因有关，HRAS癌基因被点突变激活；
+
+1983年NRAS在致癌物诱导的动物肿瘤中被确定；
+
+1984年发现RAS可以被促有丝分裂因子激活；
+
+1987年发现RAS在结肠肿瘤中常发生突变，RAS-GAP被确定；
+
+1988年RAS的结构被完整分析；
+
+1993年发现RAS与RAF发生互作；1994年发现PI3K是RAS的效应物；
+
+1997年证明KPAS对RAS的重要性；1999年证明RAS癌基因对维持肿瘤十分重要；
+
+2001年内源性突变型KRAS的体细胞激活有道肺部肿瘤的发展；
+
+2005年突变型KRAS基因标签在肺癌中被鉴定；
+
+2006年WGS测定KRAS是结肠癌中最常见的突变致癌基因；2008年证明在胰腺癌中是最常见的突变致癌基因
+
+KRAS的作用就是参与细胞内的信号传递（例如细胞生长、血管生成等），发生异常时，就会持续刺激细胞生长，阻止细胞自我凋亡；它发生突变时，就不能产生RAS蛋白，细胞内的信号传导就会紊乱，增殖失控
+
+参考：https://meetinglibrary.asco.org/record/123622/abstract
+
+https://www.onclive.com/web-exclusives/osimertinib-receives-breakthrough-therapy-designation-for-nsclc-in-firstline
