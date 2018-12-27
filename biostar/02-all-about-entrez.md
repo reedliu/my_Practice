@@ -127,5 +127,3 @@ cat info.csv | grep '2014-08-19' | cut -d ',' -f1 | grep SRR | head -10 > ids.tx
   ```shell
   cat ids.txt | while read i;do ascp -v -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh -k 1 -T -l200m anonftp@ftp-private.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/SRR155/$i/$i.sra ./;echo "Downloaded $i" done
   ```
-
-
