@@ -34,6 +34,12 @@ BRCA1 and BRCA2 are human genes that produce tumor **suppressor** proteins. Spec
 
 People of **Ashkenazi Jewish** descent have a **higher prevalence** of harmful BRCA1 and BRCA2 mutations than people in the general U.S. . Also, **Norwegian, Dutch, and Icelandic** peoples have a higher prevalence.
 
+#### About genetic sequencing tests
+
+- Do not benefit every patient. They might **not identify the "driver" DNA alteration** or **cannot be targeted** by existing therapies
+- **Heterogeneous** :tumors are composed of cancer cells with varied. A small sample of cancer cells obtained from a biopsy may not accurately represent a heterogeneous tumor. The tests  act **against some, but not all**, of your cancer cells.
+- Genetic alterations in a tumor can change over time, but a sequencing test **only captures a “snapshot”**
+
 #### Genetic test result
 
 - **Positive** 
