@@ -6,6 +6,8 @@
 
 https://www.cancer.gov/about-cancer/causes-prevention/genetics/brca-fact-sheet
 
+https://www.cancer.gov/about-cancer/treatment/types/precision-medicine/tumor-dna-sequencing
+
 #### What are BRCA1 and BRCA2?
 
 BRCA1 and BRCA2 are human genes that produce tumor **suppressor** proteins. Specific inherited mutations in BRCA1 and BRCA2 most notably increase the risk of **female breast and ovarian cancers**. A harmful *BRCA1* or *BRCA2* mutation can be inherited from a person’s **mother or father** with **50% chance** to pass it on to child.
@@ -66,3 +68,20 @@ Genetic testing for these other mutations is available as part of **multigene (p
 - Higher possibility of developing  a second cancer in either the **same (ipsilateral)** breast or the **opposite  (contralateral)** breast. Some women chose a bilateral mastectomy or breast-conserving surgery.
 - Tend to be  **"TNBC (triple-negative cancers)"** (that is, the breast cancer cells do not have estrogen receptors, progesterone receptors, or large amounts of HER2/neu protein), which generally have **poorer prognosis** than other breast cancers.
 - A class of drugs called **PARP inhibitors [e.g.  olaparib (Lynparza™) and rucaparib (Rubraca®)]**, which block the repair of DNA damage, have been found to **arrest the growth of cancer cells** that have *BRCA1* or *BRCA2* mutations. **Olaparib** is also approved for **HER2-negative** metastatic breast cancers
+
+> Reed Liu created on 18.12.28
+
+### Read content on this dissertation:
+
+Understanding the Biology of Triple Negative Breast Cancer and Breast Cancer Stem Cells in Patients of Diverse Ethnicities.
+
+#### Breast cancer burden
+
+- **1.7 million** new cases worldwide in 2012
+- **2.4 million** incident cases in 2015, making it the most common cancer. As  fifth leading cause of cancer deaths for both men and women. For women, breast cancer was the leading cause of death in 2015.
+- **In U.S.**, approximately one in eight women **(12%)**  will develop. In 2016, more than **3.5 million** women have a breast cancer history. Additional **246,660** new cases are expected to be diagnosed and approximately **40450** would die
+- **Median age** at diagnosis of **breast cancer is 61 years**, **lung cancer is 70 years** and **colorectal cancer is 68 years**. 
+  About **19%** diagnosed in women **aged 30 to 49 years.**
+
+#### Breast cancer sub-type
+
