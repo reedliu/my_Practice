@@ -82,8 +82,8 @@ $ seqkit seq --name --only-id dup_sub.fq.gz
 先用conda安装好`csvtk` 
 
 ```shell
-$ eqkit fx2tab -n -i -a xxx.fq.gz | csvtk -H -t -f 4 -r -i grep  -p "[^ATCG]"
-# 因为这里的实例数据都是不错的，没有低质量(可能之前的序列结果又更新了)
+$ seqkit fx2tab -n -i -a xxx.fq.gz | csvtk -H -t -f 4 -r -i grep  -p "[^ATCG]"
+# 因为这里的实例数据都是不错的，没有低质量(可能之前的序列结果又更新了)。可以自己找一个包括N碱基的序列试试，替换掉xxx.fq.gz就好
 # csvtk参数表示：
 # -H: --no-header-row 
 # -t: --tabs 
@@ -95,3 +95,60 @@ $ eqkit fx2tab -n -i -a xxx.fq.gz | csvtk -H -t -f 4 -r -i grep  -p "[^ATCG]"
 
 假入找到了低质量碱基，我们想过滤掉
 
+```shell
+# 先找到低质量序列ID
+$ seqkit fx2tab -n -i -a xxx.fq.gz | csvtk -H -t -f 4 -r -i grep  -p "[^ATCG]" | csvtk -H -t cut -f 1 > id2.txt
+# 然后找到这些ID并去除
+$ seqkit grep --pattern-file id2.txt --invert-match xxx.fq.gz >clean.fa
+```
+
+或者我们想看看这些低质量碱基所在序列的信息（包括基因ID、正负链、起始终止位点等）
+
+```shell
+$ seqkit grep --pattern-file id2.txt xxx.fq.gz | seqkit locate --ignore-case --only-positive-strand --pattern N+
+# 其中--pattern可以多设置几个，就找出包含多种碱基的序列，比如可以再加一个 --pattern K+
+# 这个+表示含有一个或者多个前面的碱基
+```
+
+#### 想要移除重复的序列
+
+```shell
+$ seqkit rmdup --by-seq --ignore-case duplicated-reads.fq.gz > rmdup.fq.gz
+# 如果序列非常大的话，可以用 -m/--md5，利用md5信息代替原始序列信息，来减少内存占用
+# 如果想根据序列名进行去重，可以使用参数 --by-name
+```
+
+#### 序列定位motif/subsequence/enzyme digest sites
+
+假入现在有一个文件存放的是motifs / enzyme digest sites
+
+```shell
+$ cat enzymes.fa
+>EcoRI
+GAATTC
+>MmeI
+TCCRAC
+>SacI
+GAGCTC
+>XcmI
+CCANNNNNNNNNTGG #表示我们这里就像匹配到CCA和TGG，中间保证9个碱基就好
+```
+
+我们为了保证上面的`XcmI`这种情况也能成功进行匹配，需要定义一个`-d或者--degenerate`参数
+
+```shell
+seqkit locate --degenerate --ignore-case --pattern-file enzymes.fa viral.1.1.genomic.fna.gz
+#或者
+seqkit locate -d -i -f enzymes.fa viral.1.1.genomic.fna.gz
+```
+
+#### 将fasta序列排序
+
+可以按照序列长度
+
+```shell
+$ seqkit sort --by-length viral.1.1.genomic.fna.gz > sorted.fa
+# 对于大型的fasta文件，可以使用-2或者--two-pass减少内存使用
+```
+
+> 以上都是一些较为常用的小操作，对于更复杂的比如“拆分fasta”、“合并fasta“等，用到可以再去搜索
