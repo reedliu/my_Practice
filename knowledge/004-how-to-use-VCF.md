@@ -4,13 +4,83 @@
 >
 > 一般我们会从WES的上游得到SNP、InDel等信息，这些重要的信息都保存在VCF中，那么怎么对这些变异进行提取、评估与解释呢？一起来学习一下
 
-### VCF是什么？
+### VCF（Variant Call Format）是什么？
 
-https://www.jianshu.com/p/957efb50108f
+之前也写过一篇相关的，这次想要更深层次去了解它https://www.jianshu.com/p/957efb50108f
+
+> 我们知道，variant calling(找变异)的过程发生在alignment(比对)之后，那么肯定流程更加复杂，因此variant calling得到的结果也要更加精炼、内容更加丰富。于是VCF文件接手了这个棘手的工作。了解VCF，对于想要另辟蹊径发现新研究内容的人来说，真的是一块宝藏，就看你怎么挖掘了。
+
+得到一个VCF文件，首先看到的就是它的**Header（表头）**，如下：（其实有非常非常多的头信息…这里只写几行）
+
+```shell
+##fileformat=VCFv4.1
+##FILTER=<ID=LowQual,Description="Low quality">
+##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
+##GATKCommandLine.HaplotypeCaller=<ID=HaplotypeCaller,Version=3.4-3-gd1ac142,Date="Mon May 18 17:36:4
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
+##contig=<ID=chr1,length=249250621,assembly=b37>
+##reference=file:human_genome_b37.fasta
+```
+
+第一行是VCF的版本信息，看似没用，但实际上我们在分析其他数据时，并不能保证一直使用最新的VCF格式，因此检查下VCF版本确保后续提取正确
+
+`FILTER`行是说过滤了什么内容；
+
+`FORMAT`和`INFO` 相当于变异位点的注释信息；
+
+`CommandLine` 是说使用的call variant工具信息；
+
+`contig`和`reference` 是当重复别人数据时，恰好没告诉你数据来源，这时就可以参考这个
+
+接下来才是重点：**Records信息**
+
+包含至少8列tab分割的常规信息（用来描述变异位点），第9列及以后表示各个样本的变异信息（可以包括成百上千个样本）
+
+前9列信息包括：
+
+- CHROM：变异发生的chromosome或者contig
+
+- POS：变异发生的基因组坐标（对缺失来讲，显示的是缺失开始的位置）
+
+- ID：一般是dbSNP的ID（可有可无）
+
+- REF：Forward strand（正链）上的参考等位基因
+  补充一下基础知识：
+  ![image.png](https://upload-images.jianshu.io/upload_images/9376801-6e1b30707190400c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+  等位基因（allele）：一对同源染色体相同位置上控制某一性状的不同形态的基因，可以简单想成控制同一性状的不同基因
+
+- ALT：正链上对应的改变的等位基因（可以有多个）
+
+- QUAL：`REF/ALT` 变异位点存在的概率（和FASTQ的质量值、SAM的MAPQ一样，都是Phred值 `-10 * log(1-p)`）
+
+- FILTER：数据一般都要经过适当的过滤后才能继续使用variant callset（变异位点数据集），关于是否完成过滤会给出三种说明：
+  一是给出没有通过过滤的变异位点；二是`PASS`表示全部通过了过滤；三是`.` 表示这个位点没有任何过滤
+
+- INFO：
+
+
+
+
+
+参考：
+
+VCF short summary：http://www.htslib.org/doc/vcf.html
+
+VCF Poster：http://vcftools.sourceforge.net/VCF-poster.pdf
+
+VCF 说明书: http://samtools.github.io/hts-specs/
+
+GATK解释VCF：https://gatkforums.broadinstitute.org/gatk/discussion/1268/what-is-a-vcf-and-how-should-i-interpret-it
+
+Difference between QUAL and GQ annotations  https://software.broadinstitute.org/gatk/documentation/article.php?id=4860
+
+---
 
 ### 如何得到VCF？
 
-
+---
 
 ### VCF基本操作
 
@@ -165,16 +235,30 @@ java -jar GATK.jar \
 
 #### 变异的蛋白功能危害注释
 
-- **PROVEAN**：（Protein Variation Effect Analyzer）用来预测SNP或者InDel是否影响蛋白质的生物功能，不仅可以对CDS区域的非同义突变进行预测，还可以对CDS区域的非移码InDel对蛋白功能的影响进行预测，并将结果大致分为：危害、可以容忍、无害
-- **SIFT**：（Sorting Intolerant From Tolerant）根据氨基酸在蛋白序列中的保守程度来预测氨基酸的变化对蛋白功能造成的影响。其中保守程度是比对进化关系较近的蛋白序列得到，分值（SIFT-score）表示突变对蛋白序列的影响，**分值越小越严重** 
-- **Polyphen2_HAVR**: (Polymorphism Phenotyping v2) 根据HumanVar数据库预测突变对蛋白的影响，来诊断孟德尔遗传病。**分值**表示SNP导致蛋白结构或功能改变的可能性，**越大越严重**
+- **PROVEAN**：（Protein Variation Effect Analyzer）http://provean.jcvi.org/index.php 用来预测SNP或者InDel是否影响蛋白质的生物功能，不仅可以对CDS区域的非同义突变进行预测，还可以对CDS区域的非移码InDel对蛋白功能的影响进行预测，并将结果大致分为：危害、可以容忍、无害
+- **SIFT**：（Sorting Intolerant From Tolerant）https://sift.bii.a-star.edu.sg/ 根据氨基酸在蛋白序列中的保守程度来预测氨基酸的变化对蛋白功能造成的影响。其中保守程度是比对进化关系较近的蛋白序列得到，分值（SIFT-score）表示突变对蛋白序列的影响，**分值越小越严重** ，一般认为：SIFT值小于0.05为有害（D：Deleterious），大于0.05表示容忍（T：Tolerance）
+- **Polyphen2_HAVR**: (Polymorphism Phenotyping v2)  http://genetics.bwh.harvard.edu/pph2/dokuwiki/downloads 根据HumanVar数据库预测突变对蛋白的影响，来诊断孟德尔遗传病。**分值**表示SNP导致蛋白结构或功能改变的可能性，**越大越严重** 
 - **Polyphen2_HDIV**： 根据HumanDiv数据库预测**，分值越大越严重**
-- **LRT**：也是基于序列保守性进行预测（像SIFT和Polyphen）。对每一个测试的密码子，LRT将来自31个物种的氨基酸进行比对来预测突变的危害。结果的**有害突变（D：Deleterious）**表示：突变来自高度保守的密码子；突变氨基酸在其他比对的真核哺乳动物中不存在。**中性突变（Neutral）**表示：突变发生在非高度保守的密码子；突变的氨基酸至少在一个进行比对的真核哺乳动物中发现
+- **LRT**：也是基于序列保守性进行预测（像SIFT和Polyphen）http://www.genetics.wustl.edu/jflab/lrt_query.html 。对每一个测试的密码子，LRT将来自31个物种的氨基酸进行比对来预测突变的危害。结果的**有害突变（D：Deleterious）**表示：突变来自高度保守的密码子；突变氨基酸在其他比对的真核哺乳动物中不存在。**中性突变（N: Neutral）**表示：突变发生在非高度保守的密码子；突变的氨基酸至少在一个进行比对的真核哺乳动物中发现
 
 #### 剪切位点突变危害注释
 
 > 如果突变发生在剪切位点附近，我们可以判断它对剪切的危害。可以用的软件有：DbscSNV、Spidex、MaxEntScan
 
-- **DbscSNV**：由AdaBoost与Random Forest开发，它根据突变前后分值的变化来预测剪切位点的突变危害性
-- **Spidex**：基于深度学习，因此预测的剪切变异可能距离常规的剪切位点比较远（这一点和DbscSNV不同）
-- **MaxEntScan**：
+- **DbscSNV**：属于VEP（Variant Effect Predictor）插件，http://asia.ensembl.org/info/docs/tools/vep/script/vep_plugins.html#plugins_existing
+
+  由AdaBoost与Random Forest开发，它根据突变前后分值的变化来预测剪切位点的突变危害性
+
+- **Spidex**：http://www.openbioinformatics.org/annovar/spidex_download_form.php 基于深度学习，因此预测的剪切变异可能距离常规的剪切位点比较远（这一点和DbscSNV不同）
+
+- **MaxEntScan**：对**5'**剪切位点附近的6bp内含子与3bp的编码区(http://genes.mit.edu/burgelab/maxent/Xmaxentscan_scoreseq.html)以及**3‘** 剪切位点附近20bp的内含子与3bp的编码区内突变进行预测(http://genes.mit.edu/burgelab/maxent/Xmaxentscan_scoreseq_acc.html)，按照突变前后分值变化来得到结论（认为有危害：突变后比突变前分值降低15%以上）
+
+#### 突变相关的疾病注释
+
+- **OMIM**：（Online Mendelian Inheritance in Man）https://www.omim.org/在线人类孟德尔遗传信息数据库，包含了遗传性的基因疾病信息与表型信息，目前收录了16000多个基因词条和5400多表型词条
+
+- **HGMD**：（The Human Gene Mutation Database）1996年创立的人类基因突变数据库，目前包括240,269个变异，覆盖9976个基因。收集的突变包含了SNP、InDel、CNV、SV、基因重组等，可以说是遗传病变异检测金标准数据库。有两个版本，一个是免费的学术public版，但更新慢（http://www.hgmd.cf.ac.uk/ac/index.php）；另一个是收费可试用的Professional版（https://www.qiagenbioinformatics.com/products/human-gene-mutation-database/），包含的变异数量也更多
+
+- **ClinVar**：2013年创立，是一个已报道突变与疾病表型关联数据库，https://www.ncbi.nlm.nih.gov/clinvar/。数据主要来源是OMIM、dbSNP、locus specific database等开源数据库，对变异位点的审核比较缺乏，因此会包含报道中冲突的致病位点
+
+  ![HGMD and ClinVar: Avoiding the Knowledge Blind Spot](https://upload-images.jianshu.io/upload_images/9376801-da9e3993df8d3ff2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
