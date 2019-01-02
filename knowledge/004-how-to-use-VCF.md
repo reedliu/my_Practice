@@ -209,22 +209,27 @@ VCF一般是利用"variant caller"或者"SNP caller"的工具对BAM比对文件�
 
 #### bowtie2+samtools+bcftools
 
-> 需要用到bowtie2的测试数据集 
-> 之前要生成VCF或者它的二进制BCF，需要用samtools mpileup，后来bcftools将mpileup加入了自己的功能中，避免了使用mpileup+bcftools call pipeline时版本冲突报错的问题，直接一步到位
+> 之前要生成VCF或者它的二进制BCF，需要用samtools mpileup，然后再利用bcftools去进行SNP calling。但是有一个问题就是：samtools与bcftools更新速度都很快，使用mpileup+bcftools call pipeline时会出现版本冲突导致报错的问题，于是后来直接一步到位将mpileup加入了bcftools的功能中
+> 【关于bcftools的介绍，继续向下看】
+>
+> ![image.png](https://upload-images.jianshu.io/upload_images/9376801-5700e4fb189925cb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ```shell
-# 下载bowtie2
+## 下载bowtie2
 cd ~/test
 wget https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.3.4.3/bowtie2-2.3.4.3-linux-x86_64.zip 
 unzip bowtie2-2.3.4.3-linux-x86_64.zip 
 cd bowtie2-2.3.4.3-linux-x86_64/example/reads
 
-# bowtie2 比对 + samtools排序
+## bowtie2 比对 + samtools排序
 wkd=~/test/bowtie2-2.3.4.3-linux-x86_64
 
 $wkd/bowtie2 -x $wkd/example/index/lambda_virus -1 reads_1.fq -2 reads_2.fq | samtools sort -@ 5 -o lamda.bam -
 
-bcftools mpileup -f $wkd/example/reference/lambda_virus.fa lamda.bam |bcftools call -vm > lamda.vcf 
+bcftools mpileup -f $wkd/example/reference/lambda_virus.fa lamda.bam |bcftools call -mv -o lamda.call.vcf 
+# 其中bcftools call使用时需要选择算法，有两个选项：-c(consensus-caller)；-m(multiallelic-caller)，其中-m比较适合多个allel与罕见变异的calling情况
+# 另外-v的意思是说：只输出变异位点信息，如果位点不是SNP/InDel就不输出
+
 ```
 
 #### GATK
@@ -261,17 +266,145 @@ https://gatkforums.broadinstitute.org/gatk/discussion/10996/deep-learning-in-gat
 
 #### 利用bcftools
 
-##### 下载测试数据及索引
+##### 背景
+
+bcftools与samtools同出李恒之手，是用来操作VCF文件的，之前有一个软件叫vcftools，但是就更新到2015年，bcftools是利用C语言开发，因此处理速度很快，可以接替vcftools。用过samtools的都知道，主命令下还有许多的子命令，例如：`samtools index` 、`samtools sort`、`samtools flagstat`等等。bcftools也是如此，主要有三大功能：
+
+- 对VCF/BCF构建**索引**：`bcftools index`
+- 对VCF/BCF进行**操作**（查看、排序、过滤、交集、格式转换等）`annotate`、`concat`、`convert`、`isec`、`merge`、`norm`、`plugin` 、`query`、`reheader`、`sort`、`view` 
+- 找**变异** `call`、`consensus`、`cnv`、`csq`、`filter`、`gtcheck`、`mpileup`、`roh`、`stats`
+
+##### 下载测试数据
 
 ```shell
 # 测试文件是19号染色体：400-500kb
 wget http://data.biostarhandbook.com/variant/subset_hg19.vcf.gz
-wget http://data.biostarhandbook.com/variant/subset_hg19.vcf.gz.tbi
+gunzip subset_hg19.vcf.gz # 先解压，一会做个错误示范
+```
+
+##### 构建索引 index =>需要用到bgzip格式
+
+```shell
+# 如果我们使用上面解压的subset_hg19.vcf，结果会如何呢？
+$ bcftools index subset_hg19.vcf
+# 报错！
+index: the file is not BGZF compressed, cannot index: subset_hg19.vcf
+
+# 因此我们需要按它的要求来压缩
+$ bgzip subset_hg19.vcf
+$ bcftools index subset_hg19.vcf.gz #默认是构建.csi索引
+
+# 另外还有一种.tbi索引
+$ bcftools index -t subset_hg19.vcf.gz
+```
+
+##### 查看、筛选、过滤 => view
+
+```shell
+## 查看
+# 同samtools一样，要想查看二进制文件(这里的.bcf)，需要用view
+$ bcftools view subset_hg19.bcf
+# .vcf可以直接less查看
+less -S subset_hg19.vcf.gz
+
+##筛选
+# 想要筛选某些样本的VCF信息(多个样本逗号分隔)
+$ bcftools view subset_hg19.vcf.gz -s HG00115,HG00116 -o subset.vcf
+# 如果不想要某些样本，只需要在样本名前加^
+$ bcftools view subset_hg19.vcf.gz -s ^HG00115 -o subset_rm_115.vcf
+
+##过滤
+# -k参数得到已知的突变位点(ID列中不是.的那部分)
+$ bcftools view subset_hg19.vcf.gz -k -o knowm.vcf
+# -n参数得到位置的突变位点(可能是novel新的位点，也就是ID列中为.的部分)
+$ bcftools view subset_hg19.vcf.gz -n -o unknowm.vcf
+```
+
+##### 标准/DIY格式转换 => view / query
+
+```shell
+## 简单的格式转换可以用view
+# 将vcf转换成bcf：-O指定输出文件类型(u表示未压缩的bcf文件；b表示压缩的bcf文件；v表示未压缩的vcf文件；z表示压缩的vcf文件)
+$ bcftools view subset_hg19.vcf.gz -O u -o subset_hg19.bcf
+
+## 想定制转换后的格式，可以用query[就是从VCF/BCF中抽取出某些部分]
+# 【-i:得到指定表达式的位点；-e：排除指定表达式的位点；-f：指定输出的format；-H输出表头（也就是format信息的汇总）】
+##############################################################################
+# 例1：想得到染色体号、变异位置、参考碱基、第一个变异碱基
+$ bcftools query -f '%CHROM  %POS  %REF  %ALT{0}\n' subset_hg19.vcf.gz
+#【结果】 
+19  499924  T  C
+##############################################################################
+# 例2：在例1的基础上将空格改成tab分隔，再增加样本名和基因型信息
+$ bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%SAMPLE=%GT]\n' subset_hg19.vcf.gz
+#【结果】
+19	499924	T	C	HG00115=0|0	HG00116=0|0	HG00117=0|0	HG00118=0|0	HG00119=0|0	HG00120=0|0
+##############################################################################
+# 例3：做一个BED文件：chr, pos (0-based), end pos (1-based), id
+$ bcftools query -f'%CHROM\t%POS0\t%END\t%ID\n' subset_hg19.vcf
+#【结果】
+19	499923	499924	rs117528364
+##############################################################################
+# 例4：将所有变异的样本以及变异情况输出
+$ bcftools query -f'[%CHROM:%POS %SAMPLE %GT\n]' -i'GT="alt"' subset_hg19.vcf
+#【结果】
+19:499978 HG00115 0|1
+19:498212 HG00118 1|1
+##############################################################################
+# 例5：练习-i和-H
+$ bcftools query -i'GT="het"' -f'[%CHROM:%POS %SAMPLE %GT \n]' -H subset_hg19.vcf
+#【结果有省略】
+[1]HG00115:CHROM:[2]HG00115:POS [3]SAMPLE [4]HG00115:GT
+[5]HG00116:CHROM:[6]HG00116:POS [7]SAMPLE [8]HG00116:GT
+19:400666 HG00115 1|0
+19:400666 HG00116 0|1
+##############################################################################
+# 例6：列出VCF中所有样本
+$ bcftools query -l subset_hg19.vcf.gz
+##############################################################################
+# 例7：提取指定区域中所有的变异信息【一个region用-r；对于多个region（如BED文件）要找变异用-R】
+$ bcftools query -r '19:400300-400800' -f '%CHROM\t%POS\t%REF\t%ALT\n' subset_hg19.vcf.gz | head
+#【结果有省略】
+19	400410	CA	C
+19	400666	G	C
+19	400742	C	T
+##############################################################################
+# 例8：相反，如果想去掉某个区域的变异，要用-t 【-t与-r相似，都是指定一个区域，不同的是：-r跳转到那个区域，而-t是扔掉这个区域；并且-t还需要加上^】
+$ bcftools query -t ^'19:400300-400800' -f '%CHROM\t%POS\t%REF\t%ALT\n' subset_hg19.vcf.gz | head
+#【结果有省略】
+19	400819	C	G
+19	400908	G	T
+19	400926	C	T
+
+# 思考：【如果要去掉多个区域，可以把它们放在BED文件中，然后用-T和^；有没有和例7中的-R很像？】
+$ cat >exclude.bed 
+19	400300	400700
+19	400900	401000
+$ bcftools query -T ^exclude.bed -f '%CHROM\t%POS\t%REF\t%ALT\n' subset_hg19.vcf.gz | head
+#【结果有省略】
+19	400742	C	T
+19	401076	C	G
+19	401077	G	A,T
+##############################################################################
+# 例9：要找到所有样本中的变异位点
+$ bcftools view -e 'GT="." | GT="0|0"' subset_hg19.vcf.gz | bcftools query -f '%POS[\t%GT\t]\n' | head 
+#【结果有省略】
+402556	0|1		0|1		1|1		1|0		0|1	1|1
+402707	0|1		0|1		1|1		1|0		0|1	1|1
+# TIP：如果想看是否有样本是纯合/杂合，可以用-g快速看一下【-g可以选择hom(homozygous), het(heterozygous ),miss(missing),还可以连用^表示反选】
+$ bcftools view -g het subset_hg19.vcf.gz | bcftools query -f '%POS[\t%GT\t]\n' | head
+
+
 ```
 
 
 
+
+
 参考：
+bcftools的manual：https://samtools.github.io/bcftools/bcftools.html
+
+samtools的manual：http://www.htslib.org/doc/samtools.html
 
 #### 利用GATK
 
