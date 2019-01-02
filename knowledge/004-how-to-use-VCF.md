@@ -318,6 +318,8 @@ $ bcftools view subset_hg19.vcf.gz -s ^HG00115 -o subset_rm_115.vcf
 $ bcftools view subset_hg19.vcf.gz -k -o knowm.vcf
 # -n参数得到位置的突变位点(可能是novel新的位点，也就是ID列中为.的部分)
 $ bcftools view subset_hg19.vcf.gz -n -o unknowm.vcf
+# -c参数设置最小的allele count(AC)值进行过滤(就是说某个变异位点出现了多少次)
+$ bcftools view -c 5 subset_hg19.vcf.gz | grep -v "#"
 ```
 
 ##### 标准/DIY格式转换 => view / query
@@ -386,16 +388,60 @@ $ bcftools query -T ^exclude.bed -f '%CHROM\t%POS\t%REF\t%ALT\n' subset_hg19.vcf
 19	401076	C	G
 19	401077	G	A,T
 ##############################################################################
-# 例9：要找到所有样本中的变异位点
+# 例9：要找到所有样本中的变异位点(也就是排除-e GT为.或者为0|0)
 $ bcftools view -e 'GT="." | GT="0|0"' subset_hg19.vcf.gz | bcftools query -f '%POS[\t%GT\t]\n' | head 
+# 这里大括号[]的意思是：对其中的每个sample进行循环处理
 #【结果有省略】
 402556	0|1		0|1		1|1		1|0		0|1	1|1
 402707	0|1		0|1		1|1		1|0		0|1	1|1
 # TIP：如果想看是否有样本是纯合/杂合，可以用-g快速看一下【-g可以选择hom(homozygous), het(heterozygous ),miss(missing),还可以连用^表示反选】
 $ bcftools view -g het subset_hg19.vcf.gz | bcftools query -f '%POS[\t%GT\t]\n' | head
-
-
+# 因此，要选择所有样本都是纯合的基因型，就要排除掉het和miss
+$ bcftools view -g ^het subset_hg19.vcf.gz | bcftools view -g ^miss | bcftools query -f '%POS[\t%GT\t]\n' | head
+##############################################################################
+# 例10：只选择InDel (顺便统计下有多少个)
+$ bcftools view -v indels subset_hg19.vcf.gz | bcftools query -f '%POS\t%TYPE\n' | wc -l
+# -v参数可选snps|indels|mnps|other，多选用逗号分隔；排除某个类型的变异，用-V
+##############################################################################
+# 例11：基于site quality(QUAL)和read depth(DP)选变异位点
+$ bcftools query -i 'QUAL>50 && DP>5000' -f '%POS\t%QUAL\t%DP\n' subset_hg19.vcf.gz | head
+#【结果有省略】
+400410	100	7773
+400666	100	8445
+400742	100	15699
 ```
+
+##### 合并VCF/BCF => merge
+
+用于将单个样本的VCF文件合并成一个多样本的（输入文件需要是bgzip压缩并且有.tbi索引）
+
+```shell
+# 假设有许多vcf的文件
+$ cat sample.list
+sp1.vcf.gz
+sp2.vcf.gz
+sp3.vcf.gz
+...
+$ bcftools merge -l sample.list > multi-sample.vcf
+```
+
+##### 取交集 => isec
+
+```shell
+## 例1：假设现在有三个样本，每个样本有自己的VCF，我们现在想找它们三者之间的共同点(-p 指定输出文件的存放目录前缀；-n指定多少样本)
+$ bcftools isec -p tmp -n=3 sp1.vcf.gz sp2.vcf.gz sp3.vcf.gz
+
+## 例2：取至少两个样本中一致的变异位点
+$ bcftools isec -p tmp -n+2 sp1.vcf.gz sp2.vcf.gz sp3.vcf.gz
+
+## 例3：只选出一个样本中有，其他样本中没有的变异位点(找到距离-C最近的那个样本中特异的位点)
+$ bcftools isec -p tmp -C sp1.vcf.gz sp2.vcf.gz sp3.vcf.gz
+# 这样得出来的结果就是：只在sp1中存在，sp2和sp3中都没有
+```
+
+##### 方便的统计=>stat
+
+
 
 
 
@@ -580,3 +626,125 @@ java -jar GATK.jar \
 - **ClinVar**：2013年创立，是一个已报道突变与疾病表型关联数据库，https://www.ncbi.nlm.nih.gov/clinvar/。数据主要来源是OMIM、dbSNP、locus specific database等开源数据库，对变异位点的审核比较缺乏，因此会包含报道中冲突的致病位点
 
   ![HGMD and ClinVar: Avoiding the Knowledge Blind Spot](https://upload-images.jianshu.io/upload_images/9376801-da9e3993df8d3ff2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+
+----
+
+#### 附录1：VCF主体部分介绍
+
+CHROM [chromosome]: 染色体名称。
+
+POS [position]: 参考基因组突变碱基位置，如果是INDEL(插入缺失)，位置是INDEL的第一个碱基位置。
+
+ID [identifier]: 突变的名称。若没有，则用‘.’表示其为一个新变种。
+
+REF [reference base(s)]: 参考染色体的碱基，必须是ATCGN中的一个，N表示不确定碱基。
+
+ALT [alternate base(s)]: 与参考序列比较，发生突变的碱基;多个的话以“,”连接， 可选符号为ATCGN*，大小写敏感。
+
+QUAL [quality]: Phred标准下的质量值，表示在该位点存在突变的可能性;该值越高，则突变的可能性越大;计算方法：Phred值 = -10 * log (1-p) p为突变存在的概率。
+
+FILTER [filter status]: GATK使用其它的方法进行过滤后得到的过滤结果，如果通过则该值为“PASS”;若此突变不可靠，则该项不为”PASS”或”.”。
+
+INFO [additional information]: 表示变异的详细信息
+
+DP [read depth]: 样本在这个位置的一些reads被过滤掉后的覆盖度
+
+DP4 : 高质量测序碱基，位于REF或者ALT前后
+
+MQ [mapping quality]: 表示覆盖序列质量的均方值RMS
+
+FQ : Phred值关于所有样本相似的可能性
+
+AF1 [allele frequency]: 表示Allele(等位基因)的频率，AF1为第一个ALT等位基因发生频率的可能性评估
+
+AC1 [allele count]: 表示Allele(等位基因)的数目,AC1为对第一个ALT等位基因计数的最大可能性评估
+
+AN [allele number]: 表示Allele(等位基因)的总数目
+
+IS : 插入缺失或部分插入缺失的reads允许的最大数量
+
+AC [allele count]: 表示该Allele(等位基因)的数目
+
+G3 : ML 评估基因型出现的频率
+
+HWE : chi^2基于HWE的测试p值和G3
+
+CLR : 在受到或者不受限制的情况下基因型出现可能性的对数值
+
+UGT : 最可能不受限制的三种基因型结构
+
+CGT : 最可能受限制三种基因型结构
+
+PV4 : 四种P值的误差，分别是(strand、baseQ、mapQ、tail distance bias)
+
+INDEL : 表示该位置的变异是插入缺失
+
+PC2 : 非参考等位基因的Phred(变异的可能性)值在两个分组中大小不同
+
+PCHI2 : 后加权chi^2，根据p值来测试两组样本之间的联系
+
+QCHI2 : Phred标准下的PCHI2.
+
+PR : 置换产生的一个较小的PCHI2
+
+QBD [quality by depth]: 表示测序深度对质量的影响
+
+RPB [read position bias]: 表示序列的误差位置
+
+MDV : 样本中高质量非参考序列的最大数目
+
+VDB [variant distance bias]: 表示RNA序列中过滤人工拼接序列的变异误差范围
+
+GT [genotype]: 表示样品的基因型。两个数字中间用‘/’分 开，这两个数字表示双倍体的sample的基因型。
+
+0 表示样品中有ref的allele
+
+1 表示样品中variant的allele
+
+2表示有第二个variant的allele
+
+0/0 表示sample中该位点为纯合的，和ref一致
+
+0/1 表示sample中该位点为杂合的，有ref和variant两个基因型
+
+1/1 表示sample中该位点为纯合的，和variant一致
+
+GQ [genotype quality]: 表示基因型的质量值。Phred格式的质量值，表示在该位点该基因型存在的可能性;该值越高，则Genotype的可能性越 大;计算方法：Phred值 = -10 * log (1-p) p为基因型存在的概率。
+
+GL : 三种基因型(RR RA AA)出现的可能性，R表示参考碱基，A表示变异碱基
+
+DV : 高质量的非参考碱基
+
+SP : Phred的p值误差线
+
+PL [provieds the likelihoods of the given genotypes]: 指定的三种基因型的质量值。三种指定的基因型为(0/0,0/1,1/1)，这三种基因型的概率总和为1。该值越大，表明为该种基因型的可能性越小。 Phred值 = -10 * log (p) p为基因型存在的概率。
+
+FORMAT : 用于描述样本的(可选)可扩展的字段列表
+
+SAMPLEs : 对于文件中描述的每一个(可选)样本，给出了在格式中列出的字段的值
+
+#### 附录2：vcf练习题
+
+http://www.bio-info-trainee.com/3577.html
+
+1. 找到基因型不是 `1/1` 的条目，个数
+
+   ```shell
+   $ bcftools view -e 'GT="1|1"' subset_hg19.vcf.gz | wc -l
+   ```
+
+2. 突变记录的vcf文件区**分成 INDEL和SNP**条目
+
+   ```shell
+   # 得到INDEL
+   $ bcftools view -v indels subset_hg19.vcf.gz > indel.vcf
+   # 得到SNP
+   $ bcftools view -v snps subset_hg19.vcf.gz > snp.vcf
+   ```
+
+3. 组合筛选变异位点质量值大于30并且深度大于20的条目
+
+   ```shell
+   bcftools query -i 'QUAL>30 && DP>20' -f '%POS\t%QUAL\t%DP\n' subset_hg19.vcf.gz | head
+   ```
