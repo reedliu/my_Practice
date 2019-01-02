@@ -2,6 +2,10 @@
 
 > 刘小泽写于18.12.31
 >
+> 上篇：主要了解VCF的背景知识；
+> 中篇：VCF怎么来？怎么进行一些小操作来获取内部信息？
+> 下篇：得到变异位点需要做些什么
+>
 > 一般我们会从WES的上游得到SNP、InDel等信息，这些重要的信息都保存在VCF中，那么怎么对这些变异进行提取、评估与解释呢？一起来学习一下
 
 ### VCF（Variant Call Format）是什么？
@@ -9,6 +13,8 @@
 之前也写过一篇相关的，这次想要更深层次去了解它https://www.jianshu.com/p/957efb50108f
 
 > 我们知道，variant calling(找变异)的过程发生在alignment(比对)之后，那么肯定流程更加复杂，因此variant calling得到的结果也要更加精炼、内容更加丰富。于是VCF文件接手了这个棘手的工作。了解VCF，对于想要另辟蹊径发现新研究内容的人来说，真的是一块宝藏，就看你怎么挖掘了。
+
+#### 主要内容
 
 得到一个VCF文件，首先看到的就是它的**Header（表头）**，如下：（其实有非常非常多的头信息…这里只写几行）
 
@@ -58,11 +64,130 @@
 - FILTER：数据一般都要经过适当的过滤后才能继续使用variant callset（变异位点数据集），关于是否完成过滤会给出三种说明：
   一是给出没有通过过滤的变异位点；二是`PASS`表示全部通过了过滤；三是`.` 表示这个位点没有任何过滤
 
-- INFO：
+- INFO：以`tag=value`的形式给出位点注释信息；分号`;`分割
 
+- FORMAT：针对样本的注释；冒号`:`分割，并且对应后面各个sample中的信息
 
+```shell
+# 大体就是这样
+#CHROM 		POS	ID	REF	ALF	QUAL	FILTER	INFO	FORMAT	align.bam
+AF086833	60	.	A	T	54	.	DP=43	GT:PL	0/1:51,0,48	
+```
 
+> 上面是关于VCF的大体了解，下面具体看看重要的部分
 
+#### 具体--REF/ALT
+
+`REF`表示在`POS`位置的参考等位基因；`ALT`表示在`POS`位置的**所有**变异
+
+开始想象场景：我们用软件发现，在60bp处发现了**一个变异**，是A变成了T，那么应该这么表示：
+
+```shell
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	align.bam
+AF086833	60	.	A	T	54	.	DP=43	GT:PL	0/1:51,0,48
+```
+
+如果**同一个位置检测到有两种**可能发生的变异呢？
+
+```shell
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	align.bam
+AF086833	60	.	A	T,C	43.2	.	DP=95	GT:PL	1/2:102,124,42,108,0,48
+```
+
+事情还没完，刚刚两个例子都只是一个变异位点，但实际上有可能**多个位点**发生缺失（**而这才是VCF复杂的开始**），例如：58、59、60碱基（GGA）发生了缺失
+
+```shell
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	align.bam
+AF086833	55	.	TGAGGA	TGA	182	.	INDEL;IDV=42	GT:PL	0/1:215,0,255
+AF086833	60	.	A	C,T	39.8	.	DP=126	GT:PL	1/2:99,87,47,86,0,49
+```
+
+这里注意：虽然我们看到缺失是从58碱基开始发生的，但是记录的是从55碱基。**你会不会好奇**：为什么是55而不是准确的58？为什么要表示成`TGAGGA->TGA`，而不是`GAGGA->GA`或者`GGA->空 ` 呢？这个需要引入一个新词汇”variant normalizatoin“，也就是说，所有的结果展示都是有规定的。
+
+> variant normalization:  2015年Unified representation of genetic variants文章中就论述了这个一致性标记的问题，其中写道：
+>
+> A genetic variant can be represented in the Variant Call Format (VCF) in multiple different ways. Inconsistent representation of variants between variant callers and analyses will magnify discrepancies between them and complicate variant filtering and duplicate removal.
+>
+> 于是制定了VCF的标准化，来方便交流，规定以下几点：
+>
+> 用尽可能少的字母来表示变异位点；
+>
+> 等位基因长度不为0；
+>
+> 变异向左”贪婪比对“ （也就是说：一直向左比对，直到不匹配为止，然后以最左边的碱基位置表示变异的起始位置）
+>
+> https://academic.oup.com/bioinformatics/article/31/13/2202/196142
+
+因此，这里写成`TGAGGA->TGA`就是表示缺失位点`GGA`向左最远可以匹配到第55号T碱基处
+
+#### 具体--FORMAT
+
+假设得到的VCF中9-11列内容如下:
+
+```shell
+#FORMAT		sample1			sample2
+GT:PL		0/1:51,0,48		1/1:34,32,0
+```
+
+表示的意思就是：在样本1中发现的变异中含有`GT=0/1`和`PL=51,0,48`这样的信息，样本2中的变异含有`GT=1/1`和`PL=34,32,0`这样的信息
+
+看到两个名词`GT`和`PL`，那么它们是什么意思呢？
+
+我们可以回过头去Header部分看一看，将会找到如下内容：
+
+```shell
+##FORMAT=<ID=GT, Number=1, Type=String, Description="Genotype">
+##FORMAT=<ID=PL, Number=G, Type=Integer, Description="List of Phred-scaled genotype likelihoods">
+```
+
+还感觉看不太懂？不着急，往下接着学
+
+#### 具体--Genotypes
+
+尽管我们可以根据`REF和ALT`知道了碱基发生了怎样的变化，但是我们想知道这个变化是只是发生在一个DNA拷贝中，还是两个拷贝都有？需要用一个指标来**量化**这种变异~**基因型（Genotype）**。`GT`就是用来表示样本中这个位点的基因型，其中0表示参考`REF`，1表示变异`ALT`的第一个entry，2表示`ALT`的第二个entry（以此类推）
+
+对于二倍体生物，GT表示了一个样本中的等位基因：
+
+- `0/0` 表示样本是纯合子，并且和参考的等位基因一样
+- `0/1`表示样本是杂合子，有一个参考的等位基因，一个变异的等位基因
+- `1/2` 样本是杂合子，两个都是变异的等位基因
+- `1/1` 样本是纯合子，且两个都是变异的第一个等位基因
+- `2/2`样本是纯合子，且两个都是变异的第二个等位基因（以此类推）
+
+当然，如果不是二倍体，命名原理也是一样：单倍体（Haploid）只有一个GT值；多倍体有多个GT值
+
+#### 具体--Genotype likelihoods
+
+直白地说就是”基因型可能性“，就是用来衡量不同基因型可能发生的概率，这是利用p-value统计，因此**0表示可能性最大**，例如：
+
+```shell
+GT:PL	0/1:51,0,48
+```
+
+其中`PL`这一项有三个数值，分别对应三种可能的基因型（`0/0`，`0/1`，`1/1`）发生的概率：第一个数值51表示基因型为`0/0`的概率是`Phred值51` ，也就是`1x10^6` ；第二个数值0表示基因型为`0/1`的概率是0（和GT判断的一致）；第三个数值48表示基因型为`1/1`的概率是`1x10^5` 
+
+#### 具体--Allele depth and depth of coverage
+
+软件判断是那种基因型，到底是不是发生了变异，是需要一定的统计方法的，主体就是之前比对的结果BAM文件，其中包含了reads的比对信息，这里就是根据reads比对的数量进行判断
+
+- **AD**（DepthPerAlleleBySample):  **unfiltered** allele depth 就是有多少reads出现了某个等位基因（其中也包含了没有经过variant caller过滤的reads），但是不包括没意义的reads（就是那些统计结果不过关的，没法说服软件相信这个等位基因）
+- **DP**（Coverage）： **filtered** depth, at the sample level 只有通过variant caller软件过滤后的reads才能计算入内，但是DP也纳入了那些经过过滤但没有意义的reads（uninformative reads），这一点又和AD不同
+
+#### 具体--Genotype Quality
+
+GQ就是用Phred值来表示GT判断的准确性，它和PL相似，但是取值不同。PL最小值0表示最准确，**GQ一般取PL的第二个小的值**（除非第二小的PL大于99）。**在GATK分析中，GQ最大就限制在99**，因为超过99其实是没有什么意义的，并且还多占字符。因此，如果GATK中发现PL值中第二个小的值比99还要大，软件就将GQ标为99。用GQ值就可以得到，第一位和第二位之间到底差了多少，因此可以快速判断分析的准不准，选择第一个靠不靠谱
+
+#### 做一个小总结--VCF帮助判断基因型
+
+> 现在来看看NA12878基因（1: 899282）的统计情况
+
+```shell
+1   899282  rs28548431  C   T   [CLIPPED] GT:AD:DP:GQ:PL    0/1:1,3:4:26:103,0,26
+```
+
+这个位点的`GT=0/1`，可以判断基因型是`C/T`；`GQ=26`表示排名第二基因型的可能性是0.0025，结果不是很好，因为虽然判断的第一位基因型的`PL` 为0很可靠，但是毕竟相差不多，很难推翻第二位（如果GQ值再大一些，我们就更有信心说明判断的`C/T`基因型是正确的）。当然，这里GQ的原因很有可能是取样太少，只有4条reads在这个位点作为参考（`DP=4`），这四条中有1条带参考的碱基信息，另外3条与参考不一致，存在变异（`AD=1,3`）
+
+**因此，重点的结论来啦！**尽管我们相信，这个位点确实存在变异，但是假阳性依然存在，也就意味着基因型判断结果不一定是杂合子`C/T`，有一定的可能是变异纯合`T/T`(`PL(1/1)=26`)，但一定不可能是参考纯合`C/C` （`PL(0/0)=103`）
 
 参考：
 
@@ -80,13 +205,73 @@ Difference between QUAL and GQ annotations  https://software.broadinstitute.org/
 
 ### 如何得到VCF？
 
+VCF一般是利用"variant caller"或者"SNP caller"的工具对BAM比对文件操作得到的
+
+#### bowtie2+samtools+bcftools
+
+> 需要用到bowtie2的测试数据集 
+> 之前要生成VCF或者它的二进制BCF，需要用samtools mpileup，后来bcftools将mpileup加入了自己的功能中，避免了使用mpileup+bcftools call pipeline时版本冲突报错的问题，直接一步到位
+
+```shell
+# 下载bowtie2
+cd ~/test
+wget https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.3.4.3/bowtie2-2.3.4.3-linux-x86_64.zip 
+unzip bowtie2-2.3.4.3-linux-x86_64.zip 
+cd bowtie2-2.3.4.3-linux-x86_64/example/reads
+
+# bowtie2 比对 + samtools排序
+wkd=~/test/bowtie2-2.3.4.3-linux-x86_64
+
+$wkd/bowtie2 -x $wkd/example/index/lambda_virus -1 reads_1.fq -2 reads_2.fq | samtools sort -@ 5 -o lamda.bam -
+
+bcftools mpileup -f $wkd/example/reference/lambda_virus.fa lamda.bam |bcftools call -vm > lamda.vcf 
+```
+
+#### GATK
+
+```shell
+# From https://www.biostars.org/p/307422/
+1. trim reads
+2. bwa mem align to genome
+3. mark duplicates (e.g. picardtools =》MarkDuplicates)
+4. use HaplotypeCaller to generate gvcf
+5. CombineGVCFs
+6. GenotypeGVCFs on the combined gvcf
+7. filter your vcf however you want
+8. You can do base recalibration iteratively now if you want with the filtered vcf.
+```
+
+
+
+参考：http://www.bio-info-trainee.com/3577.html
+
+bcftools 说明书 https://samtools.github.io/bcftools/bcftools.html
+
+拓展阅读：GATK的深度学习Convolutional Neural Networks（CNN）vs. Google DeepVariant vs. GATK VQSR  https://www.biostars.org/p/301751/ [其中 Andrew认为GATK是寻找变异的金标准，但是程序有点繁琐，好用不好入门。有推荐使用samtools+bcftools的，并且它们在鉴定SNVs有优势，但InDel方面就欠缺一些]
+
+https://gatkforums.broadinstitute.org/gatk/discussion/10996/deep-learning-in-gatk4
+
+【**！放在公众号！**】小福利：2018.11最新的GATK Worksheet 链接：https://share.weiyun.com/5vefLMG 密码：yf5322
+
 ---
 
 ### VCF基本操作
 
-#### 利用vcftools
+> 得到了VCF文件只是第一步，下面还需要一定的技巧获得想要的数据
+
+#### 利用bcftools
+
+##### 下载测试数据及索引
+
+```shell
+# 测试文件是19号染色体：400-500kb
+wget http://data.biostarhandbook.com/variant/subset_hg19.vcf.gz
+wget http://data.biostarhandbook.com/variant/subset_hg19.vcf.gz.tbi
+```
 
 
+
+参考：
 
 #### 利用GATK
 
