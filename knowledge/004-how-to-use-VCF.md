@@ -463,6 +463,8 @@ bcftools的manual：https://samtools.github.io/bcftools/bcftools.html
 
 samtools的manual：http://www.htslib.org/doc/samtools.html
 
+bcftools examples: https://samtools.github.io/bcftools/howtos/query.html
+
 #### 利用GATK
 
 > 我们想要找到可靠的结果，一般会采用两种以上的软件进行分析，对于找变异也是如此。
@@ -667,9 +669,9 @@ MQ [mapping quality]: 表示覆盖序列质量的均方值RMS
 
 FQ : Phred值关于所有样本相似的可能性
 
-AF1 [allele frequency]: 表示Allele(等位基因)的频率，AF1为第一个ALT等位基因发生频率的可能性评估
+AF [allele frequency]: 表示Allele(等位基因)的频率，AF1为第一个ALT等位基因发生频率的可能性评估
 
-AC1 [allele count]: 表示Allele(等位基因)的数目,AC1为对第一个ALT等位基因计数的最大可能性评估
+AC [allele count]: 表示Allele(等位基因)的数目,AC1为对第一个ALT等位基因计数的最大可能性评估
 
 AN [allele number]: 表示Allele(等位基因)的总数目
 
@@ -757,11 +759,27 @@ http://www.bio-info-trainee.com/3577.html
 3. INDEL条目**再区分成insertion和deletion**统计
 
    ```shell
-   
    $ conda install bedops -y
    $ vcf2bed --insertions < subset_hg19.vcf | wc -l # insertion
    $ vcf2bed --deletions < subset_hg19.vcf  | wc -l # deletion
+   # 用命令行的话：一开始想的是这样[但事实证明想简单了，下面进行说明]
+   awk '! /\#/' subset_hg19.vcf | awk '{if(length($4) > length($5) ) print}' | wc -l # 得到insertion
+   awk '! /\#/' subset_hg19.vcf | awk '{if(length($4) < length($5) ) print}' | wc -l #得到deletion
    ```
+
+   > 这里发现一个问题：同样得到deletion的结果，但是软件vcf2bed计算的结果比awk计算的要少。我特意找了一下它们的结果做了对比，发现问题出在原始vcf文件中：原始文件中的INDEL有这样一种情况
+   >
+   > ![image.png](https://upload-images.jianshu.io/upload_images/9376801-cba60ebcf4d987c6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+   >
+   > 在406852位点原来的TC对应两个变异，一个是Insertion，一个是Deletion，那么软件vcf2bed在处理的时候，既算了insertion一次，又算了deletion一次；
+   >
+   > 但是用命令行awk自己做，就不能算进来这样的数据，说明一开始没有考虑到这种情况。后来找到另一个命令行处理https://bioinformatics.stackexchange.com/questions/769/how-can-i-extract-only-insertions-from-a-vcf-file
+
+   ```shell
+   zcat subset_hg19.vcf.gz | perl -ane '$x=0;for $y (split(",",$F[4])){$x=1 if length($y)>length($F[3])}print if /^#/||$x' | grep -v "#" | wc -l #得到insertion
+   ```
+
+   关于一行对应多个突变的情况，这是正常的。因为VCF是一个位点描述文件，原则上可以描述多个突变（包括野生型非突变allele），因此可以有多个插入、缺失、单核苷酸SNV的存在【参考：https://anjingwd.github.io/AnJingwd.github.io/2018/01/20/ANNOVAR%E8%BF%9B%E8%A1%8C%E7%AA%81%E5%8F%98%E6%B3%A8%E9%87%8A/】
 
 4. 组合筛选变异位点质量值大于30并且深度大于20的条目
 
