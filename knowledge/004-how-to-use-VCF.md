@@ -441,9 +441,20 @@ $ bcftools isec -p tmp -C sp1.vcf.gz sp2.vcf.gz sp3.vcf.gz
 
 ##### 方便的统计=>stat
 
+```shell
+# 例如要统计SNP信息(包括)
+$ bcftools view -v snps subset_hg19.vcf.gz > snps.vcf
+$ bcftools stats snps.vcf > snps.stats
+```
 
+可视化需要安装latex、matplotlib，直接上conda，然后使用`plot-vcfstats` 
 
+```shell
+$ plot-vcfstats snps.stats -p tmp/
+# -p 指定文件夹名字，结果生成的pdf文件就存放其中。然后主要看summary.pdf
+```
 
+![image.png](https://upload-images.jianshu.io/upload_images/9376801-4e066ecd4336a626.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
 
@@ -696,7 +707,7 @@ MDV : 样本中高质量非参考序列的最大数目
 
 VDB [variant distance bias]: 表示RNA序列中过滤人工拼接序列的变异误差范围
 
-GT [genotype]: 表示样品的基因型。两个数字中间用‘/’分 开，这两个数字表示双倍体的sample的基因型。
+GT [genotype]: 表示样品的基因型。两个数字中间用`|`分 开，这两个数字表示双倍体的sample的基因型。
 
 0 表示样品中有ref的allele
 
@@ -743,8 +754,19 @@ http://www.bio-info-trainee.com/3577.html
    $ bcftools view -v snps subset_hg19.vcf.gz > snp.vcf
    ```
 
-3. 组合筛选变异位点质量值大于30并且深度大于20的条目
+3. INDEL条目**再区分成insertion和deletion**统计
+
+   ```shell
+   
+   $ conda install bedops -y
+   $ vcf2bed --insertions < subset_hg19.vcf | wc -l # insertion
+   $ vcf2bed --deletions < subset_hg19.vcf  | wc -l # deletion
+   ```
+
+4. 组合筛选变异位点质量值大于30并且深度大于20的条目
 
    ```shell
    bcftools query -i 'QUAL>30 && DP>20' -f '%POS\t%QUAL\t%DP\n' subset_hg19.vcf.gz | head
    ```
+
+5. 
