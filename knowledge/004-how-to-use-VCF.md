@@ -585,6 +585,10 @@ java -jar GATK.jar \
 	-o patient.D2D.private.vcf #仅在该病人中有，在ESP6500和1000G中没有的变异位点
 ```
 
+---
+
+> 找到变异，然后呢？
+
 ### 变异位点的注释
 
 > 我们得到变异位点，但仅仅是知道了它们在基因组上的位置信息和相关的碱基信息。那么还存在许许多多的疑问没有解决：
@@ -658,6 +662,86 @@ java -jar GATK.jar \
 
   ![HGMD and ClinVar: Avoiding the Knowledge Blind Spot](https://upload-images.jianshu.io/upload_images/9376801-da9e3993df8d3ff2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
+
+
+#### 练一个工具--snpEff
+
+##### conda安装
+
+```shell
+$ conda install -y snpeff
+```
+
+##### 看看snpeff目前有什么数据库
+
+```shell
+# 目前有42791个数据库
+$ snpEff databases > listing.txt
+```
+
+##### 找到Ebola相关数据库
+
+```shell
+$ cat listing.txt | grep Homo_sapiens
+#GRCh37.75                                                   Homo_sapiens                                                	          	                              	http://downloads.sourceforge.net/project/snpeff/databases/v4_3/snpEff_v4_3_GRCh37.75.zip
+```
+
+##### 下载数据库
+
+```shell
+$ snpEff download GRCh37.75  
+# 或者
+$ wget -c http://downloads.sourceforge.net/project/snpeff/databases/v4_3/snpEff_v4_3_GRCh37.75.zip
+```
+
+##### 进行注释
+
+```shell
+$ snpEff GRCh37.75 subset_hg19.vcf > subset_hg19.anno.vcf 
+```
+
+##### 结果
+
+主要还是看官方manual，得到的新注释的vcf中最明显的变化就是INFO列增加了一个字段`ANN`，默认`ANN`中又会给出几种信息
+
+- **Allele**：列出突变碱基
+
+- **Annotation**：列出`Sequence Ontology`中的条目，表示变异的后果或者影响（effect or consequence），例如`intron_variant`；如果有多个，用&连接`intron_variant&nc_transcript_variant`
+
+- **Putative impact**：变异位点的危害程度大小，四个取值：HIGH、MODERATE、LOW、MODIFIER
+
+  ![image.png](https://upload-images.jianshu.io/upload_images/9376801-f36c392a19e37b2d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+- **Gene name**：HGNC官方基因名
+
+- **Gene ID**
+
+- **Feature type**：feature信息（如transcript, motif, miRNA等等），如果是组织特异性信息，可以添加细胞类型或者组织信息等（用冒号隔开），如`H3K4me3:HeLa-S3`
+
+- **Feature ID** ：根据type来决定ID，比如type是transcript，那么就是Transcript ID，另外还有Motif ID、miRNA、ChipSeq peak、Histone mark等
+
+- **Transcript biotype**：Ensembl数据库的转录本类型（`Coding / Noncoding`）
+
+- **Rank**： 变异位点出现在基因区域时，会给出位点在`exon/intron`的第几位。例如，变异位点出现在某基因的第2个exon上，而这个基因共有10个exon，因此就显示`2/10` 
+
+- **HGVS.c**：根据HGVS（http://www.hgvs.org/）标准命名的基因水平变异
+
+- **HGVS.p**：根据HGVS标准命名的蛋白水平变异（前提是变异位点在编码区）。如果Transcript ID在feature ID中表示出来了，这里就可以省略
+
+- **cDNA_position（可选cDNA_len）**：变异位点在cDNA的位置（或cDNA的总长度）
+
+- **CDS_position （可选CDS_len）**：变异位点在CDS的位置（或CDS长度）
+
+- **Protein_positoin (可选Protein_len)**：位点在AA的位置（或AA总长度）
+
+- **Distance**：变异位点与最接近的feature的距离，例如位点在exon，会给出与最近的内含子的距离；位于基因间区会给出与最近基因的距离
+  ![image.png](https://upload-images.jianshu.io/upload_images/9376801-22cc7ee0bea4c577.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+- **Errors，Warnings**： 注释可靠性评估【见官网】
+
+参考：snpEff manual http://snpeff.sourceforge.net/VCFannotationformat_v1.0.pdf
+
+http://snpeff.sourceforge.net/SnpEff_manual.html
 
 ----
 
@@ -805,4 +889,22 @@ http://www.bio-info-trainee.com/3577.html
    bcftools query -i 'QUAL>30 && DP>20' -f '%POS\t%QUAL\t%DP\n' subset_hg19.vcf.gz | head
    ```
 
-5. 
+5. 看一下总体质量值分布【来自直播基因组-27】
+
+   ```shell
+   # 根据第5列QUAL
+   perl -alne '{next if/^#/;$tmp=int($F[5]/10);$h{$tmp}++}END{print "$_\t$h{$_}" foreach sort {$a <=> $b} keys %h}' subset_hg19.vcf >vcf.quality.stat
+   # 因为是部分测试数据，所以全部的QUAL都为100，但是真实情况有许多10、20的，一般低于20的需要舍弃
+   ```
+
+6. 统计测序深度的分布
+
+   ```shell
+   perl -alne '{next if/^#/; /DP=(\d+);/;$tmp=$1;next unless $tmp;$tmp=int($tmp/10);$h{$tmp}++;}END{print "$_\t$h{$_}" foreach sort {$a <=> $b} keys %h}' subset_hg19.vcf >vcf.depth.stat
+   ```
+
+7. 看下杂合与纯合变异位点分布
+
+   ```shell
+   $ grep INDEL subset_hg19.vcf  |perl -alne '{@tmp=split/:/,$F[9];print $tmp[0]}' |sort |uniq -c
+   ```
