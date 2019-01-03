@@ -156,6 +156,20 @@ GT:PL		0/1:51,0,48		1/1:34,32,0
 
 当然，如果不是二倍体，命名原理也是一样：单倍体（Haploid）只有一个GT值；多倍体有多个GT值
 
+#### 具体--Allele
+
+A开头的大多和等位基因相关，如
+
+- AC（Allele Count）：该Allele数目
+- AF(Allele Frequency)：该Allele频率
+- AN(Allel Number)：Allele总数目
+
+对于二倍体样本（Diploid sample），基因型为`0/1`表示杂合子：`AC=1`表示Allele数为1（即该位点只有1个等位基因发生变异）；`AF=0.5`频率为0.5（该位点只有50%的等位基因发生变异）；`AN=2`表示总Allele为2。
+
+基因型为`1/1`表示纯合子，`AC=2,AF=1,AN=2` 
+
+正常人的二倍体基因组位点只有杂合和纯合两种情况，因此杂合AF一定是0.5，纯合AF一定是1，但实际的VCF数据是通过测序数据来的，随机性加上测序深度不够带来的系统误差，就使得结果变得不那么理想
+
 #### 具体--Genotype likelihoods
 
 直白地说就是”基因型可能性“，就是用来衡量不同基因型可能发生的概率，这是利用p-value统计，因此**0表示可能性最大**，例如：
@@ -170,12 +184,14 @@ GT:PL	0/1:51,0,48
 
 软件判断是那种基因型，到底是不是发生了变异，是需要一定的统计方法的，主体就是之前比对的结果BAM文件，其中包含了reads的比对信息，这里就是根据reads比对的数量进行判断
 
-- **AD**（DepthPerAlleleBySample):  **unfiltered** allele depth 就是有多少reads出现了某个等位基因（其中也包含了没有经过variant caller过滤的reads），但是不包括没意义的reads（就是那些统计结果不过关的，没法说服软件相信这个等位基因）
-- **DP**（Coverage）： **filtered** depth, at the sample level 只有通过variant caller软件过滤后的reads才能计算入内，但是DP也纳入了那些经过过滤但没有意义的reads（uninformative reads），这一点又和AD不同
+- **AD**（DepthPerAlleleBySample):  **unfiltered** allele depth 就是有多少reads出现了某个等位基因（其中也包含了没有经过variant caller过滤的reads），但是不包括没意义的reads（就是那些统计结果不过关的，没法说服软件相信这个等位基因）。在二倍体样本中表示为：逗号分隔的两个值，**前者为对应的ref基因型，后者为对应alt的基因型**
+- **DP**（Coverage，即reads覆盖度，指一些reads被过滤后的覆盖度）： **filtered** depth, at the sample level 只有通过variant caller软件过滤后的reads才能计算入内，但是DP也纳入了那些经过过滤但没有意义的reads（uninformative reads），这一点又和AD不同
 
 #### 具体--Genotype Quality
 
 GQ就是用Phred值来表示GT判断的准确性，它和PL相似，但是取值不同。PL最小值0表示最准确，**GQ一般取PL的第二个小的值**（除非第二小的PL大于99）。**在GATK分析中，GQ最大就限制在99**，因为超过99其实是没有什么意义的，并且还多占字符。因此，如果GATK中发现PL值中第二个小的值比99还要大，软件就将GQ标为99。用GQ值就可以得到，第一位和第二位之间到底差了多少，因此可以快速判断分析的准不准，选择第一个靠不靠谱
+
+> Basically the GQ gives you the difference between the likelihoods of the two most likely genotypes. **If it is low, there is not much confidence in the genotype.**
 
 #### 做一个小总结--VCF帮助判断基因型
 
@@ -465,6 +481,8 @@ samtools的manual：http://www.htslib.org/doc/samtools.html
 
 bcftools examples: https://samtools.github.io/bcftools/howtos/query.html
 
+find common variants in multiple VCF files https://justinbagley.rbind.io/2018/07/25/how-to-find-common-variants-in-multiple-vcf-files/
+
 #### 利用GATK
 
 > 我们想要找到可靠的结果，一般会采用两种以上的软件进行分析，对于找变异也是如此。
@@ -608,7 +626,7 @@ java -jar GATK.jar \
 
   ![image.png](https://upload-images.jianshu.io/upload_images/9376801-36ae5e7cad2c4635.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-- **gnomeAD**：（Genome Aggregation Database）博得研究所支持建立，包含了千人基因组、ESP数据库以及绝大部分的ExAC数据库。目前有125,748个外显子数据和15,708个基因组数据 http://gnomad.broadinstitute.org/
+- **gnomeAD**：（Genome Aggregation Database）博得研究所支持建立，包含了千人基因组、ESP数据库以及绝大部分的ExAC数据库。目前有125,748个外显子数据和15,708个基因组数据 http://gnomad.broadinstitute.org/，这些数据来自大型人群测序和疾病研究项目
 
 #### 变异的蛋白功能危害注释
 
