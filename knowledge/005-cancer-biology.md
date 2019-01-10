@@ -69,9 +69,15 @@ Now refers to the spreading of cancer from primary site to distant organs
 
 ### six most common cancers worldwide
 
-- Lung
-- Colon
+> The global cancer burden is estimated to have risen to **18.1 million** new cases and **9.6 million deaths** in 2018
+>
+> ![image.png](https://upload-images.jianshu.io/upload_images/9376801-4e9f7bf2d054217e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+>
+> https://www.who.int/cancer/PRGlobocanFinal.pdf
+
+- Lung 
 - Breast
+- Colon
 - Prostate
 - Stomach
 - Liver
