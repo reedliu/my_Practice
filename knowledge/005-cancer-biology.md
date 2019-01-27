@@ -182,4 +182,3 @@ Now refers to the spreading of cancer from primary site to distant organs
 ### Lecture2 ~ Cancer Genetics
 
 > Reed Liu created on 19.1.11
-
